@@ -1,0 +1,163 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Models\InstansiModel;
+
+/**
+ * ============================================================
+ * Instansi Controller - CRUD Mitra Kerja / Instansi
+ * ============================================================
+ */
+class Instansi extends BaseController
+{
+    protected $instansiModel;
+
+    public function __construct()
+    {
+        $this->instansiModel = new InstansiModel();
+    }
+
+    /**
+     * INDEX - Tampilkan daftar semua instansi
+     * URL: GET /instansi
+     */
+    public function index()
+    {
+        $data = [
+            'title'    => 'Data Instansi',
+            'instansi' => $this->instansiModel->orderBy('nama_instansi', 'ASC')->findAll(),
+        ];
+
+        return view('instansi/index', $data);
+    }
+
+    /**
+     * CREATE - Tampilkan form tambah instansi
+     * URL: GET /instansi/create
+     */
+    public function create()
+    {
+        $data = [
+            'title'      => 'Tambah Instansi',
+            'validation' => \Config\Services::validation(),
+        ];
+
+        return view('instansi/create', $data);
+    }
+
+    /**
+     * STORE - Proses simpan instansi baru ke database
+     * URL: POST /instansi/store
+     */
+    public function store()
+    {
+        $rules = [
+            'nama_instansi' => [
+                'label'  => 'Nama Instansi',
+                'rules'  => 'required|min_length[3]|max_length[255]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'min_length' => '{field} minimal {param} karakter.',
+                    'max_length' => '{field} maksimal {param} karakter.',
+                ],
+            ],
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput();
+        }
+
+        $this->instansiModel->insert([
+            'nama_instansi' => $this->request->getPost('nama_instansi'),
+            'alamat'        => $this->request->getPost('alamat'),
+            'no_telp'       => $this->request->getPost('no_telp'),
+        ]);
+
+        return redirect()->to('/instansi')
+            ->with('success', 'Instansi "' . $this->request->getPost('nama_instansi') . '" berhasil ditambahkan!');
+    }
+
+    /**
+     * EDIT - Tampilkan form edit instansi
+     * URL: GET /instansi/edit/(:num)
+     */
+    public function edit($id = null)
+    {
+        $instansi = $this->instansiModel->find($id);
+
+        if ($instansi === null) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound(
+                'Instansi tidak ditemukan.'
+            );
+        }
+
+        $data = [
+            'title'      => 'Edit Instansi - ' . $instansi['nama_instansi'],
+            'instansi'   => $instansi,
+            'validation' => \Config\Services::validation(),
+        ];
+
+        return view('instansi/edit', $data);
+    }
+
+    /**
+     * UPDATE - Proses update instansi
+     * URL: POST /instansi/update/(:num)
+     */
+    public function update($id = null)
+    {
+        $instansi = $this->instansiModel->find($id);
+
+        if ($instansi === null) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound(
+                'Instansi tidak ditemukan.'
+            );
+        }
+
+        $rules = [
+            'nama_instansi' => [
+                'label'  => 'Nama Instansi',
+                'rules'  => 'required|min_length[3]|max_length[255]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'min_length' => '{field} minimal {param} karakter.',
+                    'max_length' => '{field} maksimal {param} karakter.',
+                ],
+            ],
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput();
+        }
+
+        $this->instansiModel->update($id, [
+            'nama_instansi' => $this->request->getPost('nama_instansi'),
+            'alamat'        => $this->request->getPost('alamat'),
+            'no_telp'       => $this->request->getPost('no_telp'),
+        ]);
+
+        return redirect()->to('/instansi')
+            ->with('success', 'Instansi "' . $this->request->getPost('nama_instansi') . '" berhasil diperbarui!');
+    }
+
+    /**
+     * DELETE - Hapus instansi
+     * URL: POST /instansi/delete/(:num)
+     */
+    public function delete($id = null)
+    {
+        $instansi = $this->instansiModel->find($id);
+
+        if ($instansi === null) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound(
+                'Instansi tidak ditemukan.'
+            );
+        }
+
+        $this->instansiModel->delete($id);
+
+        return redirect()->to('/instansi')
+            ->with('success', 'Instansi "' . $instansi['nama_instansi'] . '" berhasil dihapus!');
+    }
+}
