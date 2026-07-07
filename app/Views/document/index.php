@@ -200,6 +200,9 @@
                                class="text-decoration-none fw-semibold" style="color: var(--dms-primary);">
                                 <?= esc($doc['judul']) ?>
                             </a>
+                            <?php if (!empty($doc['nomor_dokumen'])) : ?>
+                                <br><small class="text-muted"><i class="bi bi-hash"></i> <?= esc($doc['nomor_dokumen']) ?></small>
+                            <?php endif; ?>
                         </td>
                         <td>
                             <span class="badge bg-light text-dark border" style="font-weight:500;">

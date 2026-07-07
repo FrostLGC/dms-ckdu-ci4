@@ -34,6 +34,25 @@
                 -->
                 <?= form_open_multipart('document/update/' . $document['id']) ?>
 
+                    <!-- INPUT: Nomor Dokumen / Surat (Opsional) -->
+                    <div class="mb-4">
+                        <label for="nomor_dokumen" class="form-label">
+                            Nomor Dokumen / Surat <span class="text-muted">(Opsional)</span>
+                        </label>
+                        <input type="text"
+                               class="form-control <?= $validation->hasError('nomor_dokumen') ? 'is-invalid' : '' ?>"
+                               id="nomor_dokumen" name="nomor_dokumen"
+                               value="<?= old('nomor_dokumen', $document['nomor_dokumen'] ?? '') ?>"
+                               placeholder="Contoh: 001/HRD/CKDU/I/2026">
+                        <div class="form-text">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Kosongkan jika dokumen tidak memiliki nomor dokumen atau nomor surat.
+                        </div>
+                        <?php if ($validation->hasError('nomor_dokumen')) : ?>
+                            <div class="invalid-feedback"><?= $validation->getError('nomor_dokumen') ?></div>
+                        <?php endif; ?>
+                    </div>
+
                     <!-- INPUT: Judul Dokumen -->
                     <div class="mb-4">
                         <label for="judul" class="form-label">

@@ -42,6 +42,7 @@ class DocumentModel extends Model
         'tipe_file',
         'category_id',
         'instansi_id',
+        'nomor_dokumen',
         'uploaded_by',
         'status',
     ];
@@ -98,6 +99,7 @@ class DocumentModel extends Model
                 d.nama_file_asli,
                 d.ukuran_file,
                 d.tipe_file,
+                d.nomor_dokumen,
                 d.status,
                 d.created_at,
                 d.updated_at,
@@ -131,6 +133,7 @@ class DocumentModel extends Model
             $builder->groupStart()
                         ->like('d.judul', $filters['keyword'])
                         ->orLike('d.deskripsi', $filters['keyword'])
+                        ->orLike('d.nomor_dokumen', $filters['keyword'])
                     ->groupEnd();
         }
 
@@ -306,6 +309,7 @@ class DocumentModel extends Model
         $builder->groupStart()
                     ->like('d.judul', $keyword)       // LIKE '%keyword%'
                     ->orLike('d.deskripsi', $keyword)  // OR LIKE '%keyword%'
+                    ->orLike('d.nomor_dokumen', $keyword) // OR nomor dokumen
                 ->groupEnd();
 
         $builder->orderBy('d.created_at', 'DESC');

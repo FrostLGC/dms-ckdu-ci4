@@ -33,9 +33,16 @@
             </div>
             <div class="card-body" style="padding:28px;">
                 <!-- Judul -->
-                <h4 class="fw-bold mb-3" style="color:var(--dms-dark);">
+                <h4 class="fw-bold mb-1" style="color:var(--dms-dark);">
                     <?= esc($document['judul']) ?>
                 </h4>
+                <?php if (!empty($document['nomor_dokumen'])) : ?>
+                    <p class="text-muted mb-3" style="font-size:.9rem;">
+                        <i class="bi bi-hash me-1"></i> <?= esc($document['nomor_dokumen']) ?>
+                    </p>
+                <?php else : ?>
+                    <div class="mb-3"></div>
+                <?php endif; ?>
 
                 <!-- Grid detail informasi -->
                 <div class="row g-4 mt-1">

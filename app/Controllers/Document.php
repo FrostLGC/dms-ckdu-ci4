@@ -274,6 +274,13 @@ class Document extends BaseController
                     'ext_in'   => '{field} harus berformat: pdf, doc, docx, xls, xlsx, ppt, pptx, jpg, jpeg, atau png.',
                 ],
             ],
+            'nomor_dokumen' => [
+                'label'  => 'Nomor Dokumen',
+                'rules'  => 'permit_empty|max_length[100]',
+                'errors' => [
+                    'max_length' => '{field} maksimal {param} karakter.',
+                ],
+            ],
         ];
 
         // Jalankan validasi. Jika GAGAL, kembali ke halaman form dengan pesan error
@@ -340,6 +347,7 @@ class Document extends BaseController
             'tipe_file'      => $file->getClientExtension(),   // Ekstensi file (pdf, docx, dll)
             'category_id'    => $this->request->getPost('category_id'),
             'instansi_id'    => empty($this->request->getPost('instansi_id')) ? null : $this->request->getPost('instansi_id'),
+            'nomor_dokumen'  => empty($this->request->getPost('nomor_dokumen')) ? null : $this->request->getPost('nomor_dokumen'),
             'uploaded_by'    => session()->get('user_id') ?? 1, // ID user yang login (sementara hardcode 1)
             'status'         => 'aktif',
         ];
@@ -525,6 +533,13 @@ class Document extends BaseController
                     'in_list'  => '{field} harus berisi aktif atau arsip.',
                 ],
             ],
+            'nomor_dokumen' => [
+                'label'  => 'Nomor Dokumen',
+                'rules'  => 'permit_empty|max_length[100]',
+                'errors' => [
+                    'max_length' => '{field} maksimal {param} karakter.',
+                ],
+            ],
         ];
 
         // Validasi file hanya jika ada file yang diunggah
@@ -552,6 +567,7 @@ class Document extends BaseController
             'deskripsi'   => $this->request->getPost('deskripsi'),
             'category_id' => $this->request->getPost('category_id'),
             'instansi_id' => empty($this->request->getPost('instansi_id')) ? null : $this->request->getPost('instansi_id'),
+            'nomor_dokumen' => empty($this->request->getPost('nomor_dokumen')) ? null : $this->request->getPost('nomor_dokumen'),
             'status'      => $this->request->getPost('status'),
         ];
 

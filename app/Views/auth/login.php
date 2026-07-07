@@ -20,7 +20,7 @@
         <div class="login-card animate-in">
             <!-- Logo -->
              <div class="mb-3 text-center">
-                <img src="<?= base_url('assets/img/ckdutrpsn.png') ?>" alt="Logo PT CKDU" style="max-width: 130px; height: auto;">
+                <img src="<?= base_url('assets/img/logockdutransparan.png') ?>" alt="Logo PT CKDU" style="max-width: 130px; height: auto;">
             </div>
 
             <h3>Selamat Datang</h3>
