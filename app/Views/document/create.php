@@ -77,7 +77,7 @@
                         </label>
                         <select class="form-select <?= $validation->hasError('category_id') ? 'is-invalid' : '' ?>"
                                 id="category_id" name="category_id">
-                            <option value="">— Pilih Kategori —</option>
+                            <option value=""> Pilih Kategori </option>
                             <?php foreach ($categories as $cat) : ?>
                                 <option value="<?= $cat['id'] ?>"
                                         <?= old('category_id') == $cat['id'] ? 'selected' : '' ?>>
@@ -97,7 +97,7 @@
                         </label>
                         <select class="form-select <?= $validation->hasError('instansi_id') ? 'is-invalid' : '' ?>"
                                 id="instansi_id" name="instansi_id">
-                            <option value="">— Opsional (Internal CKDU) —</option>
+                            <option value=""> Opsional (Internal CKDU) </option>
                             <?php foreach ($instansis as $inst) : ?>
                                 <option value="<?= $inst['id'] ?>"
                                         <?= old('instansi_id') == $inst['id'] ? 'selected' : '' ?>>

@@ -90,7 +90,7 @@
                         </label>
                         <select class="form-select <?= $validation->hasError('role') ? 'is-invalid' : '' ?>"
                                 id="role" name="role">
-                            <option value="">— Pilih Role —</option>
+                            <option value=""> Pilih Role </option>
                             <option value="admin" <?= old('role', $user['role']) == 'admin' ? 'selected' : '' ?>>
                                 Admin (Akses penuh)
                             </option>

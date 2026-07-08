@@ -141,7 +141,7 @@ class Auth extends BaseController
 
         // Redirect ke dashboard dengan pesan selamat datang
         return redirect()->to('/dashboard')
-            ->with('success', 'Selamat datang, ' . $user['nama'] . '! 👋');
+            ->with('success', 'Selamat datang, ' . $user['nama'] . '!');
     }
 
     /**

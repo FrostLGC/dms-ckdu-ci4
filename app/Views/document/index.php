@@ -181,6 +181,7 @@
                     <tr>
                         <th style="width:50px;">#</th>
                         <th>Judul Dokumen</th>
+                        <th>No. Dokumen</th>
                         <th>Kategori</th>
                         <th>Instansi</th>
                         <th>Tipe</th>
@@ -200,8 +201,14 @@
                                class="text-decoration-none fw-semibold" style="color: var(--dms-primary);">
                                 <?= esc($doc['judul']) ?>
                             </a>
+                        </td>
+                        <td>
                             <?php if (!empty($doc['nomor_dokumen'])) : ?>
-                                <br><small class="text-muted"><i class="bi bi-hash"></i> <?= esc($doc['nomor_dokumen']) ?></small>
+                                <span class="badge bg-light text-dark border" style="font-weight:500;">
+                                    <?= esc($doc['nomor_dokumen']) ?>
+                                </span>
+                            <?php else : ?>
+                                <span class="badge bg-light text-muted border" style="font-weight:500;">—</span>
                             <?php endif; ?>
                         </td>
                         <td>

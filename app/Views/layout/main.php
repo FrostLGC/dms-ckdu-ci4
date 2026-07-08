@@ -25,7 +25,7 @@
     <aside class="dms-sidebar" id="sidebar">
         <!-- Brand / Logo -->
         <div class="sidebar-brand">
-            <img src="<?= base_url('assets/img/ckdutrpsn.png') ?>" alt="Logo CKDU" style="max-width: 80px; height: auto; margin-bottom: 10px;">
+            <img src="<?= base_url('assets/img/logockdutransparan.png') ?>" alt="Logo CKDU" style="max-width: 80px; height: auto; margin-bottom: 10px;">
             <h5>DMS</h5>
             <small>PT. Cipta Karya Dharma Utama</small>
         </div>
@@ -55,17 +55,6 @@
                     Dokumen
                 </a>
             </li>
-
-            <!-- Cetak Laporan: admin + hrd -->
-            <?php if (in_array($role, ['admin', 'hrd'])) : ?>
-            <li>
-                <a href="<?= base_url('report') ?>"
-                   class="<?= str_contains(uri_string(), 'report') ? 'active' : '' ?>">
-                    <span class="nav-icon"><i class="bi bi-printer-fill"></i></span>
-                    Cetak Laporan
-                </a>
-            </li>
-            <?php endif; ?>
 
             <!-- Upload Dokumen: admin + hrd -->
             <?php if (in_array($role, ['admin', 'hrd'])) : ?>
@@ -97,6 +86,17 @@
                     Instansi
                 </a>
             </li>
+
+            <!-- Cetak Laporan: admin + hrd -->
+            <?php if (in_array($role, ['admin', 'hrd'])) : ?>
+            <li>
+                <a href="<?= base_url('report') ?>"
+                   class="<?= str_contains(uri_string(), 'report') ? 'active' : '' ?>">
+                    <span class="nav-icon"><i class="bi bi-printer-fill"></i></span>
+                    Cetak Laporan
+                </a>
+            </li>
+            <?php endif; ?>
         </ul>
 
         <!-- Separator + Section -->
