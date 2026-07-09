@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Sistem Manajemen Dokumen - PT. Cipta Karya Dharma Utama">
-    <title><?= esc($title ?? 'Dashboard') ?> — DMS PT. CKDU</title>
+    <title><?= esc($title ?? 'Dashboard') ?> - DMS PT. CKDU</title>
 
     <!-- ============================================================
          CSS: Bootstrap 5 (lokal/offline) + Custom CSS
@@ -67,8 +67,7 @@
             </li>
             <?php endif; ?>
 
-            <!-- Kategori: admin + hrd -->
-            <?php if (in_array($role, ['admin', 'hrd'])) : ?>
+            <!-- Kategori: SEMUA PERAN (pimpinan read-only) -->
             <li>
                 <a href="<?= base_url('category') ?>"
                    class="<?= str_contains(uri_string(), 'category') ? 'active' : '' ?>">
@@ -76,9 +75,9 @@
                     Kategori
                 </a>
             </li>
-            <?php endif; ?>
 
-            <!-- Instansi: SEMUA PERAN -->
+            <!-- Instansi: admin + hrd saja (pimpinan belum di Iterasi 11) -->
+            <?php if (in_array($role, ['admin', 'hrd'])) : ?>
             <li>
                 <a href="<?= base_url('instansi') ?>"
                    class="<?= str_contains(uri_string(), 'instansi') ? 'active' : '' ?>">
@@ -86,9 +85,9 @@
                     Instansi
                 </a>
             </li>
+            <?php endif; ?>
 
-            <!-- Cetak Laporan: admin + hrd -->
-            <?php if (in_array($role, ['admin', 'hrd'])) : ?>
+            <!-- Cetak Laporan: SEMUA PERAN -->
             <li>
                 <a href="<?= base_url('report') ?>"
                    class="<?= str_contains(uri_string(), 'report') ? 'active' : '' ?>">
@@ -96,14 +95,12 @@
                     Cetak Laporan
                 </a>
             </li>
-            <?php endif; ?>
         </ul>
 
         <!-- Separator + Section -->
         <div class="nav-section">Lainnya</div>
         <ul class="sidebar-nav">
-            <!-- Audit Log: admin SAJA -->
-            <?php if ($role === 'admin') : ?>
+            <!-- Audit Log: SEMUA PERAN -->
             <li>
                 <a href="<?= base_url('auditlog') ?>"
                    class="<?= str_contains(uri_string(), 'auditlog') ? 'active' : '' ?>">
@@ -111,7 +108,6 @@
                     Audit Log
                 </a>
             </li>
-            <?php endif; ?>
 
             <!-- Pengguna: admin SAJA -->
             <?php if ($role === 'admin') : ?>

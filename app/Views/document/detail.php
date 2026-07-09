@@ -129,6 +129,12 @@
                 </h6>
             </div>
             <div class="card-body d-grid gap-2">
+                <?php
+                    $role = session()->get('user_role');
+                    $userId = (int) session()->get('user_id');
+                    $canModify = $role === 'admin' || ($role === 'hrd' && (int) ($document['uploaded_by'] ?? 0) === $userId);
+                ?>
+
                 <!-- Tombol Preview PDF (hanya tampil jika file PDF) -->
                 <?php if (strtolower($document['tipe_file']) === 'pdf') : ?>
                 <a href="<?= base_url('document/preview/' . $document['id']) ?>"
@@ -147,17 +153,19 @@
                 </a>
                 <?php endif; ?>
 
-                <!-- Tombol Download -->
+                <!-- Tombol Download: semua role -->
                 <a href="<?= base_url('document/download/' . $document['id']) ?>"
                    class="btn btn-outline-primary" style="border-radius:10px;">
                     <i class="bi bi-download me-2"></i> Download File
                 </a>
 
+                <?php if ($canModify) : ?>
                 <!-- Tombol Edit / Revisi -->
                 <a href="<?= base_url('document/edit/' . $document['id']) ?>"
                    class="btn btn-outline-warning" style="border-radius:10px;">
                     <i class="bi bi-pencil-square me-2"></i> Edit / Revisi
                 </a>
+                <?php endif; ?>
 
                 <!-- Tombol Kembali -->
                 <a href="<?= base_url('document') ?>"
@@ -165,6 +173,7 @@
                     <i class="bi bi-arrow-left me-2"></i> Kembali ke Daftar
                 </a>
 
+                <?php if ($canModify) : ?>
                 <hr>
 
                 <!-- Tombol Hapus (dengan konfirmasi) -->
@@ -176,6 +185,7 @@
                         <i class="bi bi-trash3-fill me-2"></i> Hapus Dokumen
                     </button>
                 </form>
+                <?php endif; ?>
             </div>
         </div>
 

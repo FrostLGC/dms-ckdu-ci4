@@ -19,6 +19,24 @@ class Instansi extends BaseController
     }
 
     /**
+     * RBAC: Blokir pimpinan dari seluruh halaman instansi.
+     * Pada Iterasi 12, pimpinan akan diberi akses read-only.
+     */
+    public function initController(
+        \CodeIgniter\HTTP\RequestInterface $request,
+        \CodeIgniter\HTTP\ResponseInterface $response,
+        \Psr\Log\LoggerInterface $logger
+    ) {
+        parent::initController($request, $response, $logger);
+
+        if (session()->get('user_role') === 'pimpinan') {
+            session()->setFlashdata('error', 'Anda tidak memiliki izin untuk mengakses halaman instansi.');
+            header('Location: ' . base_url('document'));
+            exit;
+        }
+    }
+
+    /**
      * INDEX - Tampilkan daftar semua instansi
      * URL: GET /instansi
      */

@@ -23,9 +23,11 @@
             Kelola semua dokumen perusahaan di satu tempat
         </p>
     </div>
+    <?php if (in_array(session()->get('user_role'), ['admin', 'hrd'])) : ?>
     <a href="<?= base_url('document/create') ?>" class="btn btn-dms-primary">
         <i class="bi bi-cloud-arrow-up-fill me-2"></i> Upload Dokumen
     </a>
+    <?php endif; ?>
 </div>
 
 <!-- ============================================================
@@ -253,13 +255,19 @@
                             <?= date('d M Y', strtotime($doc['created_at'])) ?>
                         </td>
                         <td>
+                            <?php
+                                $role = session()->get('user_role');
+                                $userId = (int) session()->get('user_id');
+                                $canModify = $role === 'admin' || ($role === 'hrd' && (int) ($doc['uploaded_by'] ?? 0) === $userId);
+                            ?>
                             <div class="d-flex gap-1">
-                                <!-- Tombol Detail -->
+                                <!-- Tombol Detail: semua role -->
                                 <a href="<?= base_url('document/detail/' . $doc['id']) ?>"
                                    class="btn btn-sm btn-outline-primary" title="Detail"
                                    style="border-radius:8px;">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
+                                <?php if ($canModify) : ?>
                                 <!-- Tombol Edit/Revisi -->
                                 <a href="<?= base_url('document/edit/' . $doc['id']) ?>"
                                    class="btn btn-sm btn-outline-warning" title="Edit / Revisi"
@@ -276,6 +284,7 @@
                                         <i class="bi bi-trash3-fill"></i>
                                     </button>
                                 </form>
+                                <?php endif; ?>
                             </div>
                         </td>
                     </tr>

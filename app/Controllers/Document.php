@@ -55,6 +55,39 @@ class Document extends BaseController
         helper(['url', 'form']);
     }
 
+    // ============================================================
+    // RBAC: Helper cek hak akses dokumen
+    // ============================================================
+
+    /**
+     * Cek apakah user boleh upload dokumen baru.
+     * Hanya admin dan hrd yang diperbolehkan.
+     */
+    private function canUploadDocument(): bool
+    {
+        return in_array(session()->get('user_role'), ['admin', 'hrd']);
+    }
+
+    /**
+     * Cek apakah user boleh edit/hapus dokumen tertentu.
+     * Admin: boleh semua. HRD: hanya milik sendiri. Pimpinan: tidak boleh.
+     */
+    private function canModifyDocument(array $document): bool
+    {
+        $role   = session()->get('user_role');
+        $userId = (int) session()->get('user_id');
+
+        if ($role === 'admin') {
+            return true;
+        }
+
+        if ($role === 'hrd') {
+            return isset($document['uploaded_by']) && (int) $document['uploaded_by'] === $userId;
+        }
+
+        return false;
+    }
+
     /**
      * ============================================================
      * FUNGSI INDEX - Menampilkan daftar semua dokumen
@@ -183,16 +216,19 @@ class Document extends BaseController
      */
     public function create()
     {
-        // Ambil daftar kategori untuk ditampilkan di dropdown <select>
-        // Di PHP Native: $kategori = mysqli_query($koneksi, "SELECT * FROM categories");
+        // RBAC: hanya admin & hrd boleh upload
+        if (!$this->canUploadDocument()) {
+            return redirect()->to('/document')->with('error', 'Anda tidak memiliki izin untuk mengupload dokumen.');
+        }
+
         $categoryModel = new \App\Models\CategoryModel();
         $instansiModel = new \App\Models\InstansiModel();
 
         $data = [
             'title'      => 'Upload Dokumen Baru',
-            'categories' => $categoryModel->findAll(), // findAll() = SELECT * FROM categories
-            'instansis'  => $instansiModel->findAll(), // Ambil data instansi
-            'validation' => \Config\Services::validation(), // Untuk menampilkan pesan error validasi
+            'categories' => $categoryModel->findAll(),
+            'instansis'  => $instansiModel->findAll(),
+            'validation' => \Config\Services::validation(),
         ];
 
         return view('document/create', $data);
@@ -235,6 +271,10 @@ class Document extends BaseController
      */
     public function upload()
     {
+        // RBAC: hanya admin & hrd boleh upload
+        if (!$this->canUploadDocument()) {
+            return redirect()->to('/document')->with('error', 'Anda tidak memiliki izin untuk mengupload dokumen.');
+        }
         // ============================================================
         // LANGKAH 1: VALIDASI INPUT
         // ============================================================
@@ -414,6 +454,11 @@ class Document extends BaseController
             );
         }
 
+        // RBAC: cek apakah user bisa menghapus dokumen ini
+        if (!$this->canModifyDocument($document)) {
+            return redirect()->to('/document')->with('error', 'Anda tidak memiliki izin untuk menghapus dokumen ini.');
+        }
+
         // Hapus file fisik dari server (jika masih ada)
         $filePath = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . 'documents' . DIRECTORY_SEPARATOR . $document['nama_file'];
         if (file_exists($filePath)) {
@@ -462,6 +507,11 @@ class Document extends BaseController
             );
         }
 
+        // RBAC: cek apakah user bisa mengedit dokumen ini
+        if (!$this->canModifyDocument($document)) {
+            return redirect()->to('/document')->with('error', 'Anda tidak memiliki izin untuk mengedit dokumen ini.');
+        }
+
         // Ambil daftar kategori dan instansi untuk dropdown
         $categoryModel = new \App\Models\CategoryModel();
         $instansiModel = new \App\Models\InstansiModel();
@@ -502,6 +552,11 @@ class Document extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound(
                 'Dokumen tidak ditemukan.'
             );
+        }
+
+        // RBAC: cek apakah user bisa memperbarui dokumen ini
+        if (!$this->canModifyDocument($document)) {
+            return redirect()->to('/document')->with('error', 'Anda tidak memiliki izin untuk memperbarui dokumen ini.');
         }
 
         // ============================================================

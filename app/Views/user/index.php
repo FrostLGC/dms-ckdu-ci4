@@ -58,18 +58,21 @@
                             <?= esc($u['email']) ?>
                         </td>
                         <td>
-                            <!--
-                                Badge role:
-                                - Admin = badge ungu/primary
-                                - User  = badge hijau/secondary
-                            -->
                             <?php if ($u['role'] === 'admin') : ?>
                                 <span class="badge bg-primary bg-opacity-10 text-primary" style="font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px;">
                                     <i class="bi bi-shield-lock-fill me-1"></i> Admin
                                 </span>
-                            <?php else : ?>
+                            <?php elseif ($u['role'] === 'hrd') : ?>
                                 <span class="badge bg-success bg-opacity-10 text-success" style="font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px;">
-                                    <i class="bi bi-person-fill me-1"></i> User
+                                    <i class="bi bi-person-badge-fill me-1"></i> HRD
+                                </span>
+                            <?php elseif ($u['role'] === 'pimpinan') : ?>
+                                <span class="badge bg-warning bg-opacity-10 text-warning" style="font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px;">
+                                    <i class="bi bi-eye-fill me-1"></i> Pimpinan
+                                </span>
+                            <?php else : ?>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary" style="font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px;">
+                                    <i class="bi bi-person-fill me-1"></i> <?= esc(ucfirst($u['role'])) ?>
                                 </span>
                             <?php endif; ?>
                         </td>

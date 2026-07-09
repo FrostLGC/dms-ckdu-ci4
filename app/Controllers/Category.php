@@ -45,8 +45,16 @@ class Category extends BaseController
      */
     public function __construct()
     {
-        // Buat instance CategoryModel
         $this->categoryModel = new CategoryModel();
+    }
+
+    /**
+     * Cek apakah user boleh mengelola (tambah/edit/hapus) kategori.
+     * Hanya admin dan hrd yang diperbolehkan.
+     */
+    private function canManageCategory(): bool
+    {
+        return in_array(session()->get('user_role'), ['admin', 'hrd']);
     }
 
     /**
@@ -97,6 +105,10 @@ class Category extends BaseController
      */
     public function create()
     {
+        if (!$this->canManageCategory()) {
+            return redirect()->to('/category')->with('error', 'Anda tidak memiliki izin untuk mengelola kategori.');
+        }
+
         $data = [
             'title'      => 'Tambah Kategori',
             'validation' => \Config\Services::validation(),
@@ -125,6 +137,10 @@ class Category extends BaseController
      */
     public function store()
     {
+        if (!$this->canManageCategory()) {
+            return redirect()->to('/category')->with('error', 'Anda tidak memiliki izin untuk mengelola kategori.');
+        }
+
         // Aturan validasi
         $rules = [
             'nama_kategori' => [
@@ -174,6 +190,10 @@ class Category extends BaseController
      */
     public function edit($id = null)
     {
+        if (!$this->canManageCategory()) {
+            return redirect()->to('/category')->with('error', 'Anda tidak memiliki izin untuk mengelola kategori.');
+        }
+
         // Cari kategori berdasarkan ID
         // find($id) = SELECT * FROM categories WHERE id = $id LIMIT 1
         $category = $this->categoryModel->find($id);
@@ -211,6 +231,10 @@ class Category extends BaseController
      */
     public function update($id = null)
     {
+        if (!$this->canManageCategory()) {
+            return redirect()->to('/category')->with('error', 'Anda tidak memiliki izin untuk mengelola kategori.');
+        }
+
         // Pastikan kategori ada
         $category = $this->categoryModel->find($id);
         if ($category === null) {
@@ -270,6 +294,10 @@ class Category extends BaseController
      */
     public function delete($id = null)
     {
+        if (!$this->canManageCategory()) {
+            return redirect()->to('/category')->with('error', 'Anda tidak memiliki izin untuk mengelola kategori.');
+        }
+
         // Cari kategori
         $category = $this->categoryModel->find($id);
 

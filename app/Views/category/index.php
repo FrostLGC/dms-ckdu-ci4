@@ -17,9 +17,11 @@
             Kelola kategori dokumen perusahaan
         </p>
     </div>
+    <?php if (in_array(session()->get('user_role'), ['admin', 'hrd'])) : ?>
     <a href="<?= base_url('category/create') ?>" class="btn btn-dms-primary">
         <i class="bi bi-plus-lg me-2"></i> Tambah Kategori
     </a>
+    <?php endif; ?>
 </div>
 
 <!-- Tabel Kategori -->
@@ -79,6 +81,7 @@
                             <?= date('d M Y', strtotime($cat['created_at'])) ?>
                         </td>
                         <td>
+                            <?php if (in_array(session()->get('user_role'), ['admin', 'hrd'])) : ?>
                             <div class="d-flex gap-1">
                                 <!-- Tombol Edit -->
                                 <a href="<?= base_url('category/edit/' . $cat['id']) ?>"
@@ -97,6 +100,9 @@
                                     </button>
                                 </form>
                             </div>
+                            <?php else : ?>
+                                <span class="text-muted">&mdash;</span>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -117,9 +123,11 @@
         <div class="empty-icon">📂</div>
         <h5>Belum ada kategori</h5>
         <p class="text-muted mb-3">Mulai dengan menambahkan kategori dokumen pertama</p>
+        <?php if (in_array(session()->get('user_role'), ['admin', 'hrd'])) : ?>
         <a href="<?= base_url('category/create') ?>" class="btn btn-dms-primary">
             <i class="bi bi-plus-lg me-2"></i> Tambah Kategori
         </a>
+        <?php endif; ?>
     </div>
 </div>
 <?php endif; ?>
