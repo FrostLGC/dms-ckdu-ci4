@@ -76,8 +76,7 @@
                 </a>
             </li>
 
-            <!-- Instansi: admin + hrd saja (pimpinan belum di Iterasi 11) -->
-            <?php if (in_array($role, ['admin', 'hrd'])) : ?>
+            <!-- Instansi: admin + hrd + pimpinan (pimpinan read-only sejak Iterasi 12) -->
             <li>
                 <a href="<?= base_url('instansi') ?>"
                    class="<?= str_contains(uri_string(), 'instansi') ? 'active' : '' ?>">
@@ -85,7 +84,6 @@
                     Instansi
                 </a>
             </li>
-            <?php endif; ?>
 
             <!-- Cetak Laporan: SEMUA PERAN -->
             <li>

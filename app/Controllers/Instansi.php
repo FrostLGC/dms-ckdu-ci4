@@ -19,21 +19,13 @@ class Instansi extends BaseController
     }
 
     /**
-     * RBAC: Blokir pimpinan dari seluruh halaman instansi.
-     * Pada Iterasi 12, pimpinan akan diberi akses read-only.
+     * RBAC: Cek apakah user boleh mengelola (CUD) instansi.
+     * Hanya admin dan hrd yang diperbolehkan.
+     * Pimpinan boleh membaca/lihat, tapi tidak boleh CUD.
      */
-    public function initController(
-        \CodeIgniter\HTTP\RequestInterface $request,
-        \CodeIgniter\HTTP\ResponseInterface $response,
-        \Psr\Log\LoggerInterface $logger
-    ) {
-        parent::initController($request, $response, $logger);
-
-        if (session()->get('user_role') === 'pimpinan') {
-            session()->setFlashdata('error', 'Anda tidak memiliki izin untuk mengakses halaman instansi.');
-            header('Location: ' . base_url('document'));
-            exit;
-        }
+    private function canManageInstansi(): bool
+    {
+        return in_array(session()->get('user_role'), ['admin', 'hrd']);
     }
 
     /**
@@ -56,6 +48,10 @@ class Instansi extends BaseController
      */
     public function create()
     {
+        if (!$this->canManageInstansi()) {
+            return redirect()->to('/instansi')->with('error', 'Anda tidak memiliki izin untuk mengelola instansi.');
+        }
+
         $data = [
             'title'      => 'Tambah Instansi',
             'validation' => \Config\Services::validation(),
@@ -70,6 +66,10 @@ class Instansi extends BaseController
      */
     public function store()
     {
+        if (!$this->canManageInstansi()) {
+            return redirect()->to('/instansi')->with('error', 'Anda tidak memiliki izin untuk mengelola instansi.');
+        }
+
         $rules = [
             'nama_instansi' => [
                 'label'  => 'Nama Instansi',
@@ -102,6 +102,10 @@ class Instansi extends BaseController
      */
     public function edit($id = null)
     {
+        if (!$this->canManageInstansi()) {
+            return redirect()->to('/instansi')->with('error', 'Anda tidak memiliki izin untuk mengelola instansi.');
+        }
+
         $instansi = $this->instansiModel->find($id);
 
         if ($instansi === null) {
@@ -125,6 +129,10 @@ class Instansi extends BaseController
      */
     public function update($id = null)
     {
+        if (!$this->canManageInstansi()) {
+            return redirect()->to('/instansi')->with('error', 'Anda tidak memiliki izin untuk mengelola instansi.');
+        }
+
         $instansi = $this->instansiModel->find($id);
 
         if ($instansi === null) {
@@ -165,6 +173,10 @@ class Instansi extends BaseController
      */
     public function delete($id = null)
     {
+        if (!$this->canManageInstansi()) {
+            return redirect()->to('/instansi')->with('error', 'Anda tidak memiliki izin untuk mengelola instansi.');
+        }
+
         $instansi = $this->instansiModel->find($id);
 
         if ($instansi === null) {

@@ -158,6 +158,13 @@ class DocumentModel extends Model
         }
 
         // ============================================================
+        // FILTER: Berdasarkan instansi/mitra kerja
+        // ============================================================
+        if (!empty($filters['instansi_id'])) {
+            $builder->where('d.instansi_id', $filters['instansi_id']);
+        }
+
+        // ============================================================
         // FILTER: Berdasarkan rentang waktu (untuk laporan)
         // ============================================================
         if (!empty($filters['start_date'])) {

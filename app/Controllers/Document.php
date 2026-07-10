@@ -130,29 +130,28 @@ class Document extends BaseController
         $keyword    = $this->request->getGet('keyword');
         $categoryId = $this->request->getGet('category_id');
         $status     = $this->request->getGet('status');
+        $instansiId = $this->request->getGet('instansi_id');
 
         // Susun array filter (hanya yang bernilai)
-        // Array ini akan dikirim ke Model untuk diterapkan sebagai WHERE clause
         $filters = [];
         if (!empty($keyword))    $filters['keyword']     = $keyword;
         if (!empty($categoryId)) $filters['category_id'] = $categoryId;
         if (!empty($status))     $filters['status']      = $status;
+        if (!empty($instansiId)) $filters['instansi_id'] = $instansiId;
 
         // ============================================================
         // LANGKAH 2: Ambil data dokumen dari Model (dengan filter)
         // ============================================================
-        // getDocuments($filters) sekarang menerima array filter
-        // Jika $filters kosong, semua dokumen akan ditampilkan (tanpa WHERE)
-        // Jika ada filter, hanya dokumen yang cocok yang dikembalikan
         $documents = $this->documentModel->getDocuments($filters);
 
         // ============================================================
-        // LANGKAH 3: Ambil daftar kategori untuk dropdown filter
+        // LANGKAH 3: Ambil daftar kategori dan instansi untuk dropdown filter
         // ============================================================
-        // Kita perlu mengirim data kategori ke View agar dropdown
-        // "Semua Kategori" bisa diisi secara dinamis dari database
         $categoryModel = new \App\Models\CategoryModel();
         $categories = $categoryModel->orderBy('nama_kategori', 'ASC')->findAll();
+
+        $instansiModel = new \App\Models\InstansiModel();
+        $instansis = $instansiModel->orderBy('nama_instansi', 'ASC')->findAll();
 
         // ============================================================
         // LANGKAH 4: Siapkan data untuk View
@@ -160,11 +159,13 @@ class Document extends BaseController
         $data = [
             'title'      => 'Daftar Dokumen',
             'documents'  => $documents,
-            'categories' => $categories,       // Untuk dropdown filter
-            'filters'    => [                  // Untuk mengisi kembali form setelah submit
+            'categories' => $categories,
+            'instansis'  => $instansis,
+            'filters'    => [
                 'keyword'     => $keyword,
                 'category_id' => $categoryId,
                 'status'      => $status,
+                'instansi_id' => $instansiId,
             ],
         ];
 

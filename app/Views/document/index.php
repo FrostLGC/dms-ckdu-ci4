@@ -56,7 +56,7 @@
             <div class="row g-3 align-items-end">
 
                 <!-- Input: Cari Judul/Deskripsi -->
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-3 col-md-6">
                     <label for="keyword" class="form-label" style="font-size:.8rem;">
                         <i class="bi bi-search me-1"></i> Cari Dokumen
                     </label>
@@ -64,26 +64,36 @@
                            class="form-control"
                            id="keyword" name="keyword"
                            value="<?= esc($filters['keyword'] ?? '') ?>"
-                           placeholder="Ketik judul atau deskripsi...">
+                           placeholder="Ketik judul, nomor, atau deskripsi...">
                 </div>
 
                 <!-- Dropdown: Kategori -->
-                <div class="col-lg-3 col-md-6">
+                <div class="col-lg-2 col-md-6">
                     <label for="category_id" class="form-label" style="font-size:.8rem;">
                         <i class="bi bi-folder2 me-1"></i> Kategori
                     </label>
                     <select class="form-select" id="category_id" name="category_id">
                         <option value="">Semua Kategori</option>
-                        <!--
-                            Loop semua kategori dari database.
-                            Jika category_id dari URL cocok dengan ID kategori ini,
-                            tambahkan atribut "selected" agar dropdown tetap terpilih
-                            setelah form di-submit (tidak reset ke "Semua Kategori").
-                        -->
                         <?php foreach ($categories as $cat) : ?>
                             <option value="<?= $cat['id'] ?>"
                                     <?= ($filters['category_id'] ?? '') == $cat['id'] ? 'selected' : '' ?>>
                                 <?= esc($cat['nama_kategori']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <!-- Dropdown: Instansi/Mitra -->
+                <div class="col-lg-2 col-md-6">
+                    <label for="instansi_id" class="form-label" style="font-size:.8rem;">
+                        <i class="bi bi-building me-1"></i> Instansi / Mitra
+                    </label>
+                    <select class="form-select" id="instansi_id" name="instansi_id">
+                        <option value="">Semua Instansi</option>
+                        <?php foreach ($instansis as $inst) : ?>
+                            <option value="<?= $inst['id'] ?>"
+                                    <?= ($filters['instansi_id'] ?? '') == $inst['id'] ? 'selected' : '' ?>>
+                                <?= esc($inst['nama_instansi']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -111,10 +121,6 @@
                         <button type="submit" class="btn btn-dms-primary flex-fill">
                             <i class="bi bi-funnel-fill me-1"></i> Filter
                         </button>
-                        <!--
-                            Tombol Reset mengarah ke /document TANPA parameter GET
-                            sehingga semua filter dikosongkan dan semua dokumen ditampilkan.
-                        -->
                         <a href="<?= base_url('document') ?>"
                            class="btn btn-outline-secondary" style="border-radius:10px;">
                             <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
@@ -134,7 +140,7 @@
      ============================================================ -->
 <?php
     // Cek apakah ada filter yang aktif
-    $hasFilter = !empty($filters['keyword']) || !empty($filters['category_id']) || !empty($filters['status']);
+    $hasFilter = !empty($filters['keyword']) || !empty($filters['category_id']) || !empty($filters['status']) || !empty($filters['instansi_id']);
 ?>
 <?php if ($hasFilter) : ?>
 <div class="d-flex align-items-center gap-2 mb-3 animate-in" style="flex-wrap:wrap;">
@@ -148,7 +154,6 @@
     <?php endif; ?>
     <?php if (!empty($filters['category_id'])) : ?>
         <?php
-            // Cari nama kategori berdasarkan ID yang dipilih
             $namaKat = '-';
             foreach ($categories as $cat) {
                 if ($cat['id'] == $filters['category_id']) {
@@ -159,6 +164,20 @@
         ?>
         <span class="badge bg-info bg-opacity-10 text-info" style="font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px;">
             📂 <?= esc($namaKat) ?>
+        </span>
+    <?php endif; ?>
+    <?php if (!empty($filters['instansi_id'])) : ?>
+        <?php
+            $namaInst = '-';
+            foreach ($instansis as $inst) {
+                if ($inst['id'] == $filters['instansi_id']) {
+                    $namaInst = $inst['nama_instansi'];
+                    break;
+                }
+            }
+        ?>
+        <span class="badge bg-secondary bg-opacity-10 text-secondary" style="font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px;">
+            🏢 <?= esc($namaInst) ?>
         </span>
     <?php endif; ?>
     <?php if (!empty($filters['status'])) : ?>
