@@ -67,7 +67,7 @@
                                     <i class="bi bi-person-badge-fill me-1"></i> HRD
                                 </span>
                             <?php elseif ($u['role'] === 'pimpinan') : ?>
-                                <span class="badge bg-warning bg-opacity-10 text-warning" style="font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px;">
+                                <span class="badge" style="background-color: #e2e8f0; color: #1e293b; font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px;">
                                     <i class="bi bi-eye-fill me-1"></i> Pimpinan
                                 </span>
                             <?php else : ?>

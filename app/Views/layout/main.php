@@ -160,22 +160,39 @@
                     $namaUser = session()->get('user_nama') ?? 'Guest';
                     // Ambil huruf pertama untuk avatar
                     $inisial = strtoupper(substr($namaUser, 0, 1));
+                    
+                    // Tentukan tampilan badge role
+                    $userRole = session()->get('user_role');
+                    $roleBadge = '';
+                    if ($userRole === 'admin') {
+                        $roleBadge = '<span class="badge bg-primary bg-opacity-10 text-primary" style="font-size:0.7rem; font-weight:600; padding:4px 10px; border-radius:20px;">Admin</span>';
+                    } elseif ($userRole === 'hrd') {
+                        $roleBadge = '<span class="badge bg-success bg-opacity-10 text-success" style="font-size:0.7rem; font-weight:600; padding:4px 10px; border-radius:20px;">HRD</span>';
+                    } elseif ($userRole === 'pimpinan') {
+                        $roleBadge = '<span class="badge" style="background-color: #e2e8f0; color: #1e293b; font-size:0.7rem; font-weight:600; padding:4px 10px; border-radius:20px;">Pimpinan</span>';
+                    }
                 ?>
                 <!-- Dropdown user menu -->
                 <div class="dropdown">
                     <button class="btn btn-link text-decoration-none d-flex align-items-center gap-2 p-0"
                             type="button" data-bs-toggle="dropdown" aria-expanded="false"
                             style="color: var(--dms-text-muted);">
-                        <span class="d-none d-md-block" style="font-size:.85rem;">
-                            <i class="bi bi-person-fill me-1"></i> <?= esc($namaUser) ?>
-                        </span>
+                        <div class="d-none d-md-block text-end pe-2">
+                            <div style="font-size:.85rem; font-weight:600; color: var(--dms-dark); line-height:1.2;">
+                                <?= esc($namaUser) ?>
+                            </div>
+                            <div class="mt-1">
+                                <?= $roleBadge ?>
+                            </div>
+                        </div>
                         <div class="user-avatar"><?= $inisial ?></div>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" style="border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,.1);">
                         <li>
                             <span class="dropdown-item-text">
-                                <strong><?= esc($namaUser) ?></strong><br>
-                                <small class="text-muted"><?= esc(session()->get('user_email') ?? '') ?></small>
+                                <div style="font-weight:600; color: var(--dms-dark);"><?= esc($namaUser) ?></div>
+                                <div class="text-muted mb-2" style="font-size:.85rem;"><?= esc(session()->get('user_email') ?? '') ?></div>
+                                <div><?= $roleBadge ?></div>
                             </span>
                         </li>
                         <li><hr class="dropdown-divider"></li>
