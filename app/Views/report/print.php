@@ -103,8 +103,13 @@
         <div class="info-laporan">
             <div class="row">
                 <div class="col-8">
-                    <strong>Kategori:</strong> <?= esc($kategoriNama) ?><br>
-                    <strong>Periode:</strong> 
+                    <table style="border: none; width: auto;">
+                        <tr><td style="border: none; padding: 2px 10px 2px 0;"><strong>Keyword</strong></td><td style="border: none; padding: 2px;">: <?= esc($keywordLabel) ?></td></tr>
+                        <tr><td style="border: none; padding: 2px 10px 2px 0;"><strong>Kategori</strong></td><td style="border: none; padding: 2px;">: <?= esc($kategoriNama) ?></td></tr>
+                        <tr><td style="border: none; padding: 2px 10px 2px 0;"><strong>Instansi/Mitra</strong></td><td style="border: none; padding: 2px;">: <?= esc($instansiNama) ?></td></tr>
+                        <tr><td style="border: none; padding: 2px 10px 2px 0;"><strong>Status</strong></td><td style="border: none; padding: 2px;">: <?= esc($statusNama) ?></td></tr>
+                        <tr><td style="border: none; padding: 2px 10px 2px 0;"><strong>Uploader</strong></td><td style="border: none; padding: 2px;">: <?= esc($uploaderNama) ?></td></tr>
+                        <tr><td style="border: none; padding: 2px 10px 2px 0;"><strong>Periode</strong></td><td style="border: none; padding: 2px;">: 
                     <?php
                         if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
                             echo date('d/m/Y', strtotime($filters['start_date'])) . ' - ' . date('d/m/Y', strtotime($filters['end_date']));
@@ -116,9 +121,12 @@
                             echo 'Semua Waktu';
                         }
                     ?>
+                        </td></tr>
+                    </table>
                 </div>
                 <div class="col-4 text-end">
-                    <strong>Tanggal Cetak:</strong> <?= date('d/m/Y') ?>
+                    <strong>Tanggal Cetak:</strong> <?= date('d/m/Y') ?><br>
+                    <strong>Total Dokumen:</strong> <?= count($documents) ?>
                 </div>
             </div>
         </div>
@@ -128,6 +136,7 @@
             <thead>
                 <tr>
                     <th style="width: 40px;">No</th>
+                    <th>Nomor Dokumen</th>
                     <th>Judul Dokumen</th>
                     <th>Kategori</th>
                     <th>Instansi/Mitra</th>
@@ -139,12 +148,13 @@
             <tbody>
                 <?php if (empty($documents)) : ?>
                     <tr>
-                        <td colspan="7" class="text-center py-4">Tidak ada data dokumen yang sesuai dengan filter.</td>
+                        <td colspan="8" class="text-center py-4">Tidak ada data dokumen yang sesuai dengan filter.</td>
                     </tr>
                 <?php else : ?>
                     <?php $no = 1; foreach ($documents as $doc) : ?>
                         <tr>
                             <td class="text-center"><?= $no++ ?></td>
+                            <td><?= esc($doc['nomor_dokumen'] ?: '-') ?></td>
                             <td><?= esc($doc['judul']) ?></td>
                             <td><?= esc($doc['nama_kategori'] ?? '-') ?></td>
                             <td><?= esc($doc['nama_instansi'] ?? 'Internal') ?></td>

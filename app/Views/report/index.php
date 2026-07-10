@@ -28,7 +28,14 @@
                 <!-- Target _blank agar hasil print terbuka di tab baru -->
                 <form action="<?= base_url('report/print') ?>" method="GET" target="_blank">
                     <div class="row g-3 mb-4">
+                        <!-- Keyword -->
                         <div class="col-md-12">
+                            <label for="keyword" class="form-label">Keyword / Nomor Dokumen</label>
+                            <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Cari judul, nomor dokumen, atau deskripsi...">
+                        </div>
+                        
+                        <!-- Kategori -->
+                        <div class="col-md-6">
                             <label for="category_id" class="form-label">Kategori Dokumen</label>
                             <select class="form-select" id="category_id" name="category_id">
                                 <option value="">Semua Kategori</option>
@@ -39,6 +46,44 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
+
+                        <!-- Instansi -->
+                        <div class="col-md-6">
+                            <label for="instansi_id" class="form-label">Instansi / Mitra</label>
+                            <select class="form-select" id="instansi_id" name="instansi_id">
+                                <option value="">Semua Instansi</option>
+                                <?php foreach ($instansis as $inst) : ?>
+                                    <option value="<?= $inst['id'] ?>">
+                                        <?= esc($inst['nama_instansi']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-md-6">
+                            <label for="status" class="form-label">Status Dokumen</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">Semua Status</option>
+                                <option value="aktif">Aktif</option>
+                                <option value="arsip">Arsip</option>
+                            </select>
+                        </div>
+
+                        <!-- Uploader -->
+                        <div class="col-md-6">
+                            <label for="uploaded_by" class="form-label">Uploader / Pengunggah</label>
+                            <select class="form-select" id="uploaded_by" name="uploaded_by">
+                                <option value="">Semua Uploader</option>
+                                <?php foreach ($uploaders as $user) : ?>
+                                    <option value="<?= $user['id'] ?>">
+                                        <?= esc($user['nama']) ?> (<?= esc(ucfirst($user['role'])) ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <!-- Tanggal -->
                         <div class="col-md-6">
                             <label for="start_date" class="form-label">Dari Tanggal</label>
                             <input type="date" class="form-control" id="start_date" name="start_date">
@@ -55,6 +100,9 @@
                         <button type="submit" class="btn btn-dms-primary">
                             <i class="bi bi-printer-fill me-2"></i> Buat Laporan
                         </button>
+                        <a href="<?= base_url('report') ?>" class="btn btn-outline-secondary" style="border-radius:10px;">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                        </a>
                     </div>
                 </form>
             </div>

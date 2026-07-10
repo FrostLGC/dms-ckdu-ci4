@@ -165,6 +165,13 @@ class DocumentModel extends Model
         }
 
         // ============================================================
+        // FILTER: Berdasarkan uploader/pengunggah
+        // ============================================================
+        if (!empty($filters['uploaded_by'])) {
+            $builder->where('d.uploaded_by', $filters['uploaded_by']);
+        }
+
+        // ============================================================
         // FILTER: Berdasarkan rentang waktu (untuk laporan)
         // ============================================================
         if (!empty($filters['start_date'])) {
