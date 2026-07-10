@@ -142,6 +142,18 @@
         <a href="<?= base_url('report') ?>" class="btn btn-outline-secondary shadow-sm">
             <i class="bi bi-arrow-left me-1"></i> Kembali ke Laporan
         </a>
+        <a href="<?= base_url('report/download-package') . '?' . http_build_query(array_filter([
+            'nomor_laporan' => $filters['nomor_laporan'] ?? ($nomorLaporan ?: ''),
+            'keyword'       => $filters['keyword'] ?? '',
+            'category_id'   => $filters['category_id'] ?? '',
+            'instansi_id'   => $filters['instansi_id'] ?? '',
+            'status'        => $filters['status'] ?? '',
+            'uploaded_by'   => $filters['uploaded_by'] ?? '',
+            'start_date'    => $filters['start_date'] ?? '',
+            'end_date'      => $filters['end_date'] ?? '',
+        ])) ?>" class="btn btn-success shadow-sm">
+            <i class="bi bi-file-zip me-1"></i> Download Paket Dokumen
+        </a>
         <button onclick="window.print()" class="btn btn-primary shadow-sm">
             <i class="bi bi-printer me-1"></i> Cetak Sekarang
         </button>

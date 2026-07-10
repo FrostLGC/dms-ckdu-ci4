@@ -151,3 +151,6 @@ $routes->get('report', 'Report::index');
 
 // GET /report/print -> Proses cetak laporan
 $routes->get('report/print', 'Report::print');
+
+// GET /report/download-package -> Download paket dokumen dalam ZIP sesuai filter laporan
+$routes->get('report/download-package', 'Report::downloadPackage');
