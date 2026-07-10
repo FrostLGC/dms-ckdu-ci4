@@ -28,6 +28,13 @@
                 <!-- Target _blank agar hasil print terbuka di tab baru -->
                 <form action="<?= base_url('report/print') ?>" method="GET" target="_blank">
                     <div class="row g-3 mb-4">
+                        <!-- Nomor Laporan Opsional -->
+                        <div class="col-md-12">
+                            <label for="nomor_laporan" class="form-label">Nomor Laporan / Surat (Opsional)</label>
+                            <input type="text" class="form-control" id="nomor_laporan" name="nomor_laporan" placeholder="Contoh: 029/CKDU/DIR/IV/2026">
+                            <div class="form-text">Kosongkan jika laporan tidak menggunakan nomor surat.</div>
+                        </div>
+
                         <!-- Keyword -->
                         <div class="col-md-12">
                             <label for="keyword" class="form-label">Keyword / Nomor Dokumen</label>

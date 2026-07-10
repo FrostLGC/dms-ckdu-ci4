@@ -85,6 +85,8 @@ class Report extends BaseController
             $statusNama = ucfirst($filters['status']);
         }
 
+        $nomorLaporan = $this->request->getGet('nomor_laporan');
+
         $data = [
             'title'        => 'Laporan Arsip Dokumen',
             'documents'    => $documents,
@@ -94,6 +96,7 @@ class Report extends BaseController
             'instansiNama' => $instansiNama,
             'uploaderNama' => $uploaderNama,
             'statusNama'   => $statusNama,
+            'nomorLaporan' => $nomorLaporan,
         ];
 
         return view('report/print', $data);

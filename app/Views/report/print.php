@@ -10,9 +10,28 @@
     
     <style>
         body {
-            background-color: #fff;
+            background-color: #f3f4f6;
             color: #000;
             font-family: 'Times New Roman', Times, serif;
+        }
+        
+        .print-page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto 20px auto;
+            padding: 12mm;
+            background: #ffffff;
+            box-sizing: border-box;
+            box-shadow: 0 0 12px rgba(0,0,0,0.15);
+        }
+        
+        .print-toolbar {
+            width: 210mm;
+            margin: 20px auto 10px auto;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
         }
         .kop-surat {
             text-align: center;
@@ -22,6 +41,16 @@
             margin: 0;
             font-weight: bold;
             font-size: 24px;
+        }
+        .company-name {
+            display: inline-block;
+            font-size: 20px;
+            font-weight: bold;
+            color: #1f5f16;
+            border-bottom: 2px solid #000;
+            padding-bottom: 2px;
+            margin-bottom: 4px;
+            margin-top: 0;
         }
         .kop-surat p {
             margin: 0;
@@ -34,6 +63,21 @@
             margin-bottom: 20px;
             padding: 1px 0;
         }
+        .report-meta-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 18px;
+            margin-bottom: 18px;
+        }
+        .report-meta-left,
+        .report-meta-right {
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .report-meta-right {
+            min-width: 180px;
+        }
         .judul-laporan {
             text-align: center;
             font-weight: bold;
@@ -45,19 +89,22 @@
             margin-bottom: 15px;
             font-size: 14px;
         }
-        table {
+        table.laporan-table {
             width: 100%;
+            table-layout: fixed;
             border-collapse: collapse;
-            font-size: 13px;
+            font-size: 9px;
+            word-wrap: break-word;
+            overflow-wrap: anywhere;
         }
-        table, th, td {
+        table.laporan-table, .laporan-table th, .laporan-table td {
             border: 1px solid #000;
         }
-        th, td {
-            padding: 8px;
+        .laporan-table th, .laporan-table td {
+            padding: 4px;
             vertical-align: middle;
         }
-        th {
+        .laporan-table th {
             background-color: #f2f2f2 !important;
             -webkit-print-color-adjust: exact;
             text-align: center;
@@ -65,11 +112,24 @@
         
         /* Pengaturan khusus saat di-print */
         @media print {
-            @page {
-                size: A4 landscape;
-                margin: 2cm;
+            body {
+                background: #ffffff;
+                margin: 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
-            .btn-print {
+            .print-page {
+                width: auto;
+                min-height: auto;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+            .no-print {
                 display: none !important;
             }
         }
@@ -77,32 +137,81 @@
 </head>
 <body>
 
-    <div class="container-fluid mt-4">
-        
-        <!-- Tombol Print Manual (Disembunyikan saat dicetak) -->
-        <div class="text-end mb-4 btn-print">
-            <button onclick="window.print()" class="btn btn-primary">
-                <i class="bi bi-printer"></i> Cetak Sekarang
-            </button>
-        </div>
+    <!-- Toolbar Aksi -->
+    <div class="print-toolbar no-print">
+        <a href="<?= base_url('report') ?>" class="btn btn-outline-secondary shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i> Kembali ke Laporan
+        </a>
+        <button onclick="window.print()" class="btn btn-primary shadow-sm">
+            <i class="bi bi-printer me-1"></i> Cetak Sekarang
+        </button>
+    </div>
 
+    <div class="print-page">
+        
         <!-- Kop Surat -->
-        <div class="kop-surat">
-            <h2>PT. CIPTA KARYA DHARMA UTAMA</h2>
-            <p>Gedung Menara Merdeka Lt. 12, Jl. Jend. Sudirman Kav. 45, Jakarta Selatan 12920</p>
-            <p>Telepon: (021) 555-1234 | Email: info@ckdu.co.id | Website: www.ckdu.co.id</p>
-        </div>
-        <div class="garis-kop"></div>
+        <table style="width: 100%; border: none; margin-bottom: 5px;">
+            <tr style="border: none;">
+                <td style="width: 110px; text-align: left; border: none; padding: 0;">
+                    <img src="<?= base_url('assets/img/logockdutransparan.png') ?>" alt="Logo CKDU" style="height: auto; width: 100px;">
+                </td>
+                <td style="text-align: center; border: none; padding: 0 110px 0 0;">
+                    <h2 class="company-name">P.T. CIPTA KARYA DHARMA UTAMA</h2>
+                    <h3 style="margin: 0 0 3px 0; font-weight: 700; font-size: 14px;">Employment Management Services</h3>
+                    <p style="margin: 0; font-size: 10px; font-weight: 700;">Head Office : Jl. Gatot Subroto Km. 5,4 Ruko Sastra Plaza Blok A No. 25 Jati Uwung - Tangerang Banten 15134</p>
+                    <p style="margin: 0; font-size: 10px; font-weight: 700;">Telp. 021-55657005, 021-55656968, Fax. 021-55650129</p>
+                    <p style="margin: 0; font-size: 10px; font-weight: 700;">Email : pt_ckdu@cbn.net.id / pt_ckdu@yahoo.com</p>
+                </td>
+            </tr>
+        </table>
+        <div style="border-top: 3px solid #000; margin-top: 10px; margin-bottom: 20px; padding: 1px 0;"></div>
 
         <!-- Judul Laporan -->
         <div class="judul-laporan">
             LAPORAN ARSIP DOKUMEN
         </div>
 
+        <!-- Nomor Surat dan Info Tambahan -->
+        <div class="report-meta-top">
+            <div class="report-meta-left">
+                <table style="border: none; width: auto; font-size: 12px;">
+                    <tr>
+                        <td style="width: 80px; padding: 2px 0; border: none;">Nomor</td>
+                        <td style="width: 15px; padding: 2px 0; border: none;">:</td>
+                        <td style="padding: 2px 0; border: none;"><?= esc($nomorLaporan ?: '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 2px 0; border: none;">Lampiran</td>
+                        <td style="padding: 2px 0; border: none;">:</td>
+                        <td style="padding: 2px 0; border: none;">-</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 2px 0; border: none;">Perihal</td>
+                        <td style="padding: 2px 0; border: none;">:</td>
+                        <td style="padding: 2px 0; border: none;">Laporan Arsip Dokumen</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="report-meta-right">
+                <table style="border: none; width: auto; margin-left: auto; font-size: 12px; text-align: left;">
+                    <tr>
+                        <td style="width: 100px; padding: 2px 0; border: none;">Tanggal Cetak</td>
+                        <td style="width: 15px; padding: 2px 0; border: none;">:</td>
+                        <td style="padding: 2px 0; border: none;"><?= date('d/m/Y') ?></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 2px 0; border: none;">Total Dokumen</td>
+                        <td style="padding: 2px 0; border: none;">:</td>
+                        <td style="padding: 2px 0; border: none;"><?= count($documents) ?></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
         <!-- Info Parameter Filter -->
         <div class="info-laporan">
             <div class="row">
-                <div class="col-8">
+                <div class="col-12">
                     <table style="border: none; width: auto;">
                         <tr><td style="border: none; padding: 2px 10px 2px 0;"><strong>Keyword</strong></td><td style="border: none; padding: 2px;">: <?= esc($keywordLabel) ?></td></tr>
                         <tr><td style="border: none; padding: 2px 10px 2px 0;"><strong>Kategori</strong></td><td style="border: none; padding: 2px;">: <?= esc($kategoriNama) ?></td></tr>
@@ -124,25 +233,21 @@
                         </td></tr>
                     </table>
                 </div>
-                <div class="col-4 text-end">
-                    <strong>Tanggal Cetak:</strong> <?= date('d/m/Y') ?><br>
-                    <strong>Total Dokumen:</strong> <?= count($documents) ?>
-                </div>
             </div>
         </div>
 
         <!-- Tabel Data -->
-        <table>
+        <table class="laporan-table">
             <thead>
                 <tr>
-                    <th style="width: 40px;">No</th>
-                    <th>Nomor Dokumen</th>
-                    <th>Judul Dokumen</th>
-                    <th>Kategori</th>
-                    <th>Instansi/Mitra</th>
-                    <th>Status</th>
-                    <th>Tgl. Upload</th>
-                    <th>Uploader</th>
+                    <th style="width: 25px;">No</th>
+                    <th style="width: 15%;">Nomor Dokumen</th>
+                    <th style="width: 25%;">Judul Dokumen</th>
+                    <th style="width: 12%;">Kategori</th>
+                    <th style="width: 15%;">Instansi/Mitra</th>
+                    <th style="width: 8%;">Status</th>
+                    <th style="width: 10%;">Tgl. Upload</th>
+                    <th style="width: 15%;">Uploader</th>
                 </tr>
             </thead>
             <tbody>
