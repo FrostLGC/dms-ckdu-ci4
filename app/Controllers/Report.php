@@ -99,6 +99,9 @@ class Report extends BaseController
             'nomorLaporan' => $nomorLaporan,
         ];
 
+        // Catat audit log cetak laporan
+        $this->logActivity('Cetak Laporan', '', 'Cetak laporan dokumen dengan total ' . count($documents) . ' dokumen');
+
         return view('report/print', $data);
     }
 
@@ -240,6 +243,9 @@ class Report extends BaseController
 
         $zip->addFromString('README-LAPORAN.txt', $readme);
         $zip->close();
+
+        // Catat audit log download paket
+        $this->logActivity('Download Paket', '', 'Download paket dokumen laporan dengan total ' . count($documents) . ' dokumen');
 
         // Stream ke browser, lalu hapus file temp
         $response = $this->response

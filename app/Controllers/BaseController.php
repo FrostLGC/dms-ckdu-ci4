@@ -43,4 +43,36 @@ abstract class BaseController extends Controller
         // Preload any models, libraries, etc, here.
         // $this->session = service('session');
     }
+
+    /**
+     * ============================================================
+     * logActivity() - Helper Audit Log Terpusat (Iterasi 14)
+     * ============================================================
+     * Mencatat aktivitas user ke tabel audit_logs.
+     * Dipanggil dari semua controller yang butuh audit trail.
+     *
+     * @param string $aksi          Jenis aksi (Login, Logout, Upload, dll.)
+     * @param string $documentName  Nama dokumen/entitas yang terlibat (opsional)
+     * @param string $keterangan    Deskripsi detail aktivitas (opsional)
+     */
+    protected function logActivity(string $aksi, string $documentName = '', string $keterangan = ''): void
+    {
+        // Hanya catat jika user sedang login
+        if (!session()->get('is_logged_in')) {
+            return;
+        }
+
+        try {
+            $auditLogModel = new \App\Models\AuditLogModel();
+            $auditLogModel->insertLog([
+                'user_id'       => session()->get('user_id'),
+                'aksi'          => $aksi,
+                'document_name' => $documentName,
+                'keterangan'    => $keterangan ?: $aksi,
+            ]);
+        } catch (\Throwable $e) {
+            // Jangan biarkan kegagalan log mengganggu proses utama
+            log_message('error', 'Gagal mencatat audit log: ' . $e->getMessage());
+        }
+    }
 }

@@ -49,6 +49,7 @@ class Instansi extends BaseController
     public function create()
     {
         if (!$this->canManageInstansi()) {
+            $this->logActivity('Akses Ditolak', '', 'Akses ditolak mengelola instansi');
             return redirect()->to('/instansi')->with('error', 'Anda tidak memiliki izin untuk mengelola instansi.');
         }
 
@@ -67,6 +68,7 @@ class Instansi extends BaseController
     public function store()
     {
         if (!$this->canManageInstansi()) {
+            $this->logActivity('Akses Ditolak', '', 'Akses ditolak mengelola instansi');
             return redirect()->to('/instansi')->with('error', 'Anda tidak memiliki izin untuk mengelola instansi.');
         }
 
@@ -92,6 +94,8 @@ class Instansi extends BaseController
             'no_telp'       => $this->request->getPost('no_telp'),
         ]);
 
+        $this->logActivity('Tambah Instansi', $this->request->getPost('nama_instansi'), 'Tambah instansi "' . $this->request->getPost('nama_instansi') . '"');
+
         return redirect()->to('/instansi')
             ->with('success', 'Instansi "' . $this->request->getPost('nama_instansi') . '" berhasil ditambahkan!');
     }
@@ -103,6 +107,7 @@ class Instansi extends BaseController
     public function edit($id = null)
     {
         if (!$this->canManageInstansi()) {
+            $this->logActivity('Akses Ditolak', '', 'Akses ditolak mengelola instansi');
             return redirect()->to('/instansi')->with('error', 'Anda tidak memiliki izin untuk mengelola instansi.');
         }
 
@@ -130,6 +135,7 @@ class Instansi extends BaseController
     public function update($id = null)
     {
         if (!$this->canManageInstansi()) {
+            $this->logActivity('Akses Ditolak', '', 'Akses ditolak mengelola instansi');
             return redirect()->to('/instansi')->with('error', 'Anda tidak memiliki izin untuk mengelola instansi.');
         }
 
@@ -163,6 +169,8 @@ class Instansi extends BaseController
             'no_telp'       => $this->request->getPost('no_telp'),
         ]);
 
+        $this->logActivity('Edit Instansi', $this->request->getPost('nama_instansi'), 'Edit instansi "' . $this->request->getPost('nama_instansi') . '"');
+
         return redirect()->to('/instansi')
             ->with('success', 'Instansi "' . $this->request->getPost('nama_instansi') . '" berhasil diperbarui!');
     }
@@ -174,6 +182,7 @@ class Instansi extends BaseController
     public function delete($id = null)
     {
         if (!$this->canManageInstansi()) {
+            $this->logActivity('Akses Ditolak', '', 'Akses ditolak mengelola instansi');
             return redirect()->to('/instansi')->with('error', 'Anda tidak memiliki izin untuk mengelola instansi.');
         }
 
@@ -186,6 +195,8 @@ class Instansi extends BaseController
         }
 
         $this->instansiModel->delete($id);
+
+        $this->logActivity('Hapus Instansi', $instansi['nama_instansi'], 'Hapus instansi "' . $instansi['nama_instansi'] . '"');
 
         return redirect()->to('/instansi')
             ->with('success', 'Instansi "' . $instansi['nama_instansi'] . '" berhasil dihapus!');

@@ -66,8 +66,8 @@ class Home extends BaseController
         $recentDocs = $documentModel->getDocuments();
         $recentDocs = array_slice($recentDocs, 0, 5);
 
-        // Ambil 5 log aktivitas terbaru untuk widget "Aktivitas Terbaru"
-        $recentLogs = $auditLogModel->getLatestLogs(5);
+        // Ambil 5 log aktivitas terbaru untuk widget "Aktivitas Terbaru" (exclude login/logout)
+        $recentLogs = $auditLogModel->getOperationalLogs(5);
 
         $data = [
             'title'         => 'Dashboard',

@@ -60,8 +60,20 @@ class User extends BaseController
         // session()->get('user_role') diset saat login di AuthController
         // Jika bukan 'admin', redirect ke dashboard dengan pesan error
         if (session()->get('user_role') !== 'admin') {
-            // Karena initController() tidak bisa langsung return redirect,
-            // kita set flash message lalu redirect via header
+            // Catat akses ditolak sebelum redirect
+            if (session()->get('is_logged_in')) {
+                try {
+                    $auditLogModel = new \App\Models\AuditLogModel();
+                    $auditLogModel->insertLog([
+                        'user_id'       => session()->get('user_id'),
+                        'aksi'          => 'Akses Ditolak',
+                        'document_name' => '',
+                        'keterangan'    => 'Akses ditolak mengelola pengguna',
+                    ]);
+                } catch (\Throwable $e) {
+                    log_message('error', 'Gagal mencatat audit log: ' . $e->getMessage());
+                }
+            }
             session()->setFlashdata('error', 'Akses ditolak! Halaman ini hanya untuk Admin.');
             header('Location: ' . base_url('dashboard'));
             exit;
@@ -185,6 +197,8 @@ class User extends BaseController
             'role'     => $this->request->getPost('role'),
         ]);
 
+        $this->logActivity('Tambah Pengguna', $this->request->getPost('nama'), 'Tambah pengguna "' . $this->request->getPost('nama') . '"');
+
         return redirect()->to('/user')
             ->with('success', 'Pengguna "' . $this->request->getPost('nama') . '" berhasil ditambahkan!');
     }
@@ -302,6 +316,8 @@ class User extends BaseController
 
         $this->userModel->update($id, $dataUpdate);
 
+        $this->logActivity('Edit Pengguna', $this->request->getPost('nama'), 'Edit pengguna "' . $this->request->getPost('nama') . '"');
+
         return redirect()->to('/user')
             ->with('success', 'Data pengguna "' . $this->request->getPost('nama') . '" berhasil diperbarui!');
     }
@@ -331,6 +347,8 @@ class User extends BaseController
         }
 
         $this->userModel->delete($id);
+
+        $this->logActivity('Hapus Pengguna', $user['nama'], 'Hapus pengguna "' . $user['nama'] . '"');
 
         return redirect()->to('/user')
             ->with('success', 'Pengguna "' . $user['nama'] . '" berhasil dihapus!');

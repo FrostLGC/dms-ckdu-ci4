@@ -160,7 +160,10 @@
                             </div>
                             <div style="min-width:0;">
                                 <div class="fw-semibold" style="font-size:.85rem; color:var(--dms-dark);">
-                                    <?= esc($log['aksi']) ?> "<?= esc($log['document_name']) ?>"
+                                    <?= esc($log['aksi']) ?>
+                                    <?php if (!empty($log['document_name'])) : ?>
+                                        "<?= esc($log['document_name']) ?>"
+                                    <?php endif; ?>
                                 </div>
                                 <div class="text-muted" style="font-size:.78rem;">
                                     <i class="bi bi-person me-1"></i> <?= esc($log['nama_user'] ?? 'Unknown') ?>

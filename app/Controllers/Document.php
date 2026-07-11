@@ -219,6 +219,7 @@ class Document extends BaseController
     {
         // RBAC: hanya admin & hrd boleh upload
         if (!$this->canUploadDocument()) {
+            $this->logActivity('Akses Ditolak', '', 'Akses ditolak upload dokumen');
             return redirect()->to('/document')->with('error', 'Anda tidak memiliki izin untuk mengupload dokumen.');
         }
 
@@ -457,6 +458,7 @@ class Document extends BaseController
 
         // RBAC: cek apakah user bisa menghapus dokumen ini
         if (!$this->canModifyDocument($document)) {
+            $this->logActivity('Akses Ditolak', $document['judul'], 'Akses ditolak menghapus dokumen "' . $document['judul'] . '"');
             return redirect()->to('/document')->with('error', 'Anda tidak memiliki izin untuk menghapus dokumen ini.');
         }
 
@@ -510,6 +512,7 @@ class Document extends BaseController
 
         // RBAC: cek apakah user bisa mengedit dokumen ini
         if (!$this->canModifyDocument($document)) {
+            $this->logActivity('Akses Ditolak', $document['judul'], 'Akses ditolak mengedit dokumen "' . $document['judul'] . '"');
             return redirect()->to('/document')->with('error', 'Anda tidak memiliki izin untuk mengedit dokumen ini.');
         }
 
@@ -557,6 +560,7 @@ class Document extends BaseController
 
         // RBAC: cek apakah user bisa memperbarui dokumen ini
         if (!$this->canModifyDocument($document)) {
+            $this->logActivity('Akses Ditolak', $document['judul'], 'Akses ditolak memperbarui dokumen "' . $document['judul'] . '"');
             return redirect()->to('/document')->with('error', 'Anda tidak memiliki izin untuk memperbarui dokumen ini.');
         }
 
@@ -771,6 +775,9 @@ class Document extends BaseController
         //   header('Content-Length: ' . filesize($filepath));
         //   readfile($filepath);
         //   exit;
+        // Catat audit log preview
+        $this->logActivity('Preview', $document['judul'], 'Preview dokumen "' . $document['judul'] . '"');
+
         return $this->response
             ->setHeader('Content-Type', $mimeType)
             ->setHeader('Content-Disposition', 'inline; filename="' . $document['nama_file_asli'] . '"')
@@ -816,6 +823,9 @@ class Document extends BaseController
         // Di balik layar, CI4 mengirim header:
         //   Content-Disposition: attachment; filename="namafile.pdf"
         // "attachment" membuat browser mengunduh, bukan menampilkan
+        // Catat audit log download
+        $this->logActivity('Download', $document['judul'], 'Download dokumen "' . $document['judul'] . '"');
+
         return $this->response->download($filePath, null)
             ->setFileName($document['nama_file_asli']);
     }

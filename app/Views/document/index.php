@@ -116,15 +116,15 @@
                 </div>
 
                 <!-- Tombol Filter & Reset -->
-                <div class="col-lg-3 col-md-8">
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-dms-primary flex-fill">
-                            <i class="bi bi-funnel-fill me-1"></i> Filter
-                        </button>
+                <div class="col-lg-3 col-md-12 d-flex align-items-end mt-3 mt-lg-0">
+                    <div class="d-flex gap-2 w-100">
                         <a href="<?= base_url('document') ?>"
-                           class="btn btn-outline-secondary" style="border-radius:10px;">
-                            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                           class="btn btn-light border text-secondary d-flex align-items-center justify-content-center gap-1 flex-fill" style="border-radius:10px;">
+                            <i class="bi bi-arrow-counterclockwise"></i> Reset
                         </a>
+                        <button type="submit" class="btn btn-dms-primary d-flex align-items-center justify-content-center gap-1 flex-fill"> 
+                            Filter
+                        </button>
                     </div>
                 </div>
 

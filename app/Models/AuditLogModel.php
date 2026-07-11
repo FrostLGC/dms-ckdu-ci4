@@ -67,6 +67,28 @@ class AuditLogModel extends Model
 
     /**
      * ============================================================
+     * Ambil log aktivitas operasional (untuk Dashboard)
+     * ============================================================
+     * 
+     * Mengecualikan Login, Logout, dan Akses Ditolak
+     * 
+     * @param int $limit  Jumlah log yang diambil (default 5)
+     * @return array      Array berisi log aktivitas
+     */
+    public function getOperationalLogs($limit = 5)
+    {
+        return $this->db->table('audit_logs AS a')
+            ->select('a.*, u.nama AS nama_user')
+            ->join('users AS u', 'u.id = a.user_id', 'left')
+            ->whereNotIn('a.aksi', ['Login', 'Logout', 'Akses Ditolak'])
+            ->orderBy('a.created_at', 'DESC')
+            ->limit($limit)
+            ->get()
+            ->getResultArray();
+    }
+
+    /**
+     * ============================================================
      * Ambil SEMUA log aktivitas (untuk halaman Audit Log penuh)
      * ============================================================
      * 
@@ -106,5 +128,52 @@ class AuditLogModel extends Model
     {
         $this->insert($data);
         return $this->getInsertID();
+    }
+
+    /**
+     * ============================================================
+     * Ambil log aktivitas dengan filter (Iterasi 14.1)
+     * ============================================================
+     *
+     * @param array $filters  Filter: keyword, action, user_id, start_date, end_date
+     * @return array
+     */
+    public function getFilteredLogs(array $filters = [])
+    {
+        $builder = $this->db->table('audit_logs AS a')
+            ->select('a.*, u.nama AS nama_user')
+            ->join('users AS u', 'u.id = a.user_id', 'left')
+            ->orderBy('a.created_at', 'DESC');
+
+        // Filter keyword: cari di aksi, document_name, keterangan, nama user
+        if (!empty($filters['keyword'])) {
+            $kw = $filters['keyword'];
+            $builder->groupStart()
+                ->like('a.aksi', $kw)
+                ->orLike('a.document_name', $kw)
+                ->orLike('a.keterangan', $kw)
+                ->orLike('u.nama', $kw)
+                ->groupEnd();
+        }
+
+        // Filter jenis aksi
+        if (!empty($filters['action'])) {
+            $builder->like('a.aksi', $filters['action'], 'none');
+        }
+
+        // Filter pengguna
+        if (!empty($filters['user_id'])) {
+            $builder->where('a.user_id', (int) $filters['user_id']);
+        }
+
+        // Filter rentang tanggal
+        if (!empty($filters['start_date'])) {
+            $builder->where('a.created_at >=', $filters['start_date'] . ' 00:00:00');
+        }
+        if (!empty($filters['end_date'])) {
+            $builder->where('a.created_at <=', $filters['end_date'] . ' 23:59:59');
+        }
+
+        return $builder->get()->getResultArray();
     }
 }

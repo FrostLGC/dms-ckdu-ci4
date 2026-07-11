@@ -139,6 +139,19 @@ class Auth extends BaseController
         // Simpan data ke session
         session()->set($sessionData);
 
+        // Catat audit log login
+        try {
+            $auditLogModel = new \App\Models\AuditLogModel();
+            $auditLogModel->insertLog([
+                'user_id'       => $user['id'],
+                'aksi'          => 'Login',
+                'document_name' => '',
+                'keterangan'    => 'Login ke sistem',
+            ]);
+        } catch (\Throwable $e) {
+            log_message('error', 'Gagal mencatat audit log login: ' . $e->getMessage());
+        }
+
         // Redirect ke dashboard dengan pesan selamat datang
         return redirect()->to('/dashboard')
             ->with('success', 'Selamat datang, ' . $user['nama'] . '!');
@@ -162,6 +175,21 @@ class Auth extends BaseController
      */
     public function logout()
     {
+        // Catat audit log logout sebelum session dihancurkan
+        try {
+            if (session()->get('is_logged_in')) {
+                $auditLogModel = new \App\Models\AuditLogModel();
+                $auditLogModel->insertLog([
+                    'user_id'       => session()->get('user_id'),
+                    'aksi'          => 'Logout',
+                    'document_name' => '',
+                    'keterangan'    => 'Logout dari sistem',
+                ]);
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'Gagal mencatat audit log logout: ' . $e->getMessage());
+        }
+
         // Hapus semua data session (user di-logout)
         session()->destroy();
 

@@ -106,6 +106,7 @@ class Category extends BaseController
     public function create()
     {
         if (!$this->canManageCategory()) {
+            $this->logActivity('Akses Ditolak', '', 'Akses ditolak mengelola kategori');
             return redirect()->to('/category')->with('error', 'Anda tidak memiliki izin untuk mengelola kategori.');
         }
 
@@ -138,6 +139,7 @@ class Category extends BaseController
     public function store()
     {
         if (!$this->canManageCategory()) {
+            $this->logActivity('Akses Ditolak', '', 'Akses ditolak mengelola kategori');
             return redirect()->to('/category')->with('error', 'Anda tidak memiliki izin untuk mengelola kategori.');
         }
 
@@ -175,6 +177,8 @@ class Category extends BaseController
             'deskripsi'     => $this->request->getPost('deskripsi'),
         ]);
 
+        $this->logActivity('Tambah Kategori', $this->request->getPost('nama_kategori'), 'Tambah kategori "' . $this->request->getPost('nama_kategori') . '"');
+
         return redirect()->to('/category')
             ->with('success', 'Kategori "' . $this->request->getPost('nama_kategori') . '" berhasil ditambahkan!');
     }
@@ -191,6 +195,7 @@ class Category extends BaseController
     public function edit($id = null)
     {
         if (!$this->canManageCategory()) {
+            $this->logActivity('Akses Ditolak', '', 'Akses ditolak mengelola kategori');
             return redirect()->to('/category')->with('error', 'Anda tidak memiliki izin untuk mengelola kategori.');
         }
 
@@ -232,6 +237,7 @@ class Category extends BaseController
     public function update($id = null)
     {
         if (!$this->canManageCategory()) {
+            $this->logActivity('Akses Ditolak', '', 'Akses ditolak mengelola kategori');
             return redirect()->to('/category')->with('error', 'Anda tidak memiliki izin untuk mengelola kategori.');
         }
 
@@ -278,6 +284,8 @@ class Category extends BaseController
             'deskripsi'     => $this->request->getPost('deskripsi'),
         ]);
 
+        $this->logActivity('Edit Kategori', $this->request->getPost('nama_kategori'), 'Edit kategori "' . $this->request->getPost('nama_kategori') . '"');
+
         return redirect()->to('/category')
             ->with('success', 'Kategori berhasil diperbarui menjadi "' . $this->request->getPost('nama_kategori') . '"!');
     }
@@ -295,6 +303,7 @@ class Category extends BaseController
     public function delete($id = null)
     {
         if (!$this->canManageCategory()) {
+            $this->logActivity('Akses Ditolak', '', 'Akses ditolak mengelola kategori');
             return redirect()->to('/category')->with('error', 'Anda tidak memiliki izin untuk mengelola kategori.');
         }
 
@@ -322,6 +331,8 @@ class Category extends BaseController
         // Aman untuk dihapus
         // delete($id) = DELETE FROM categories WHERE id = $id
         $this->categoryModel->delete($id);
+
+        $this->logActivity('Hapus Kategori', $category['nama_kategori'], 'Hapus kategori "' . $category['nama_kategori'] . '"');
 
         return redirect()->to('/category')
             ->with('success', 'Kategori "' . $category['nama_kategori'] . '" berhasil dihapus!');
