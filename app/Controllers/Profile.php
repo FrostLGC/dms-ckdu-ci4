@@ -104,10 +104,13 @@ class Profile extends BaseController
             $dataUpdate['password'] = password_hash($passwordBaru, PASSWORD_BCRYPT);
         }
 
-        $this->userModel->update($userId, $dataUpdate);
-
-        // Perbarui nama di session agar langsung terlihat di topbar
-        session()->set('user_name', $this->request->getPost('nama'));
+        if ($this->userModel->update($userId, $dataUpdate)) {
+            // Perbarui nama dan email di session agar langsung terlihat di topbar
+            session()->set([
+                'user_nama'  => $dataUpdate['nama'],
+                'user_email' => $dataUpdate['email'],
+            ]);
+        }
 
         return redirect()->to('/profile')
             ->with('success', 'Profil berhasil diperbarui!');

@@ -21,10 +21,34 @@
                         <?= esc($user['nama']) ?>
                     </h4>
                     <p class="text-muted mb-1" style="font-size:.9rem;">
-                        <i class="bi bi-envelope me-1"></i> <?= esc($user['email']) ?>
+                        <i class="bi bi-envelope me-1"></i> <?= esc($user['email']) ?> 
                     </p>
-                    <span class="badge bg-primary bg-opacity-10 text-primary" style="font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px;">
-                        <i class="bi bi-shield-lock me-1"></i> <?= ucfirst(esc($user['role'])) ?>
+                    <?php
+                        $roleLower = strtolower($user['role']);
+                        if ($roleLower === 'admin') {
+                            $badgeClass = 'bg-primary bg-opacity-10 text-primary';
+                            $badgeStyle = '';
+                            $badgeIcon  = 'bi-shield-lock-fill';
+                            $badgeText  = 'Admin';
+                        } elseif ($roleLower === 'hrd') {
+                            $badgeClass = 'bg-success bg-opacity-10 text-success';
+                            $badgeStyle = '';
+                            $badgeIcon  = 'bi-person-badge-fill';
+                            $badgeText  = 'HRD';
+                        } elseif ($roleLower === 'pimpinan') {
+                            $badgeClass = '';
+                            $badgeStyle = 'background-color: #e2e8f0; color: #1e293b;';
+                            $badgeIcon  = 'bi-eye-fill';
+                            $badgeText  = 'Pimpinan';
+                        } else {
+                            $badgeClass = 'bg-secondary bg-opacity-10 text-secondary';
+                            $badgeStyle = '';
+                            $badgeIcon  = 'bi-person-fill';
+                            $badgeText  = ucfirst(esc($user['role']));
+                        }
+                    ?>
+                    <span class="badge <?= $badgeClass ?>" style="font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px; <?= $badgeStyle ?>">
+                        <i class="bi <?= $badgeIcon ?> me-1"></i> <?= $badgeText ?>
                     </span>
                 </div>
             </div>

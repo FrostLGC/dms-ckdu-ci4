@@ -330,4 +330,44 @@ class DocumentModel extends Model
 
         return $builder->get()->getResultArray();
     }
+
+    /**
+     * ============================================================
+     * Mengambil jumlah dokumen berdasarkan kategori (untuk Dashboard)
+     * ============================================================
+     * 
+     * @return array
+     */
+    public function getDocumentCountByCategory()
+    {
+        return $this->db->table('categories AS c')
+            ->select('c.nama_kategori, COUNT(d.id) AS total_dokumen')
+            ->join('documents AS d', 'd.category_id = c.id', 'left')
+            ->groupBy('c.id')
+            ->orderBy('total_dokumen', 'DESC')
+            ->get()
+            ->getResultArray();
+    }
+
+    /**
+     * ============================================================
+     * Mengambil jumlah dokumen berdasarkan instansi (untuk Dashboard)
+     * ============================================================
+     * 
+     * Memetakan instansi NULL menjadi "Internal CKDU".
+     * Maksimal mengambil 8 entri instansi terbesar.
+     * 
+     * @return array
+     */
+    public function getDocumentCountByInstansi()
+    {
+        return $this->db->table('documents AS d')
+            ->select('COALESCE(i.nama_instansi, "Internal CKDU") AS nama_instansi, COUNT(d.id) AS total_dokumen')
+            ->join('instansi AS i', 'i.id = d.instansi_id', 'left')
+            ->groupBy('d.instansi_id')
+            ->orderBy('total_dokumen', 'DESC')
+            ->limit(8)
+            ->get()
+            ->getResultArray();
+    }
 }

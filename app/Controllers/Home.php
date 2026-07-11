@@ -69,14 +69,30 @@ class Home extends BaseController
         // Ambil 5 log aktivitas terbaru untuk widget "Aktivitas Terbaru" (exclude login/logout)
         $recentLogs = $auditLogModel->getOperationalLogs(5);
 
+        // --- Fitur Monitoring (Iterasi 16) ---
+        $periodInput = $this->request->getGet('period');
+        $allowedPeriods = [7, 30, 90];
+        $period = in_array((int)$periodInput, $allowedPeriods) ? (int)$periodInput : 30;
+
+        $activitySummary = $auditLogModel->getActivitySummaryByPeriod($period);
+        $categoryChart   = $documentModel->getDocumentCountByCategory();
+        $instansiChart   = $documentModel->getDocumentCountByInstansi();
+
+        $activeTab = $this->request->getGet('tab') === 'monitoring' ? 'monitoring' : 'ringkasan';
+
         $data = [
-            'title'         => 'Dashboard',
-            'totalDokumen'  => $totalDokumen,
-            'totalAktif'    => $totalAktif,
-            'totalArsip'    => $totalArsip,
-            'totalKategori' => $totalKategori,
-            'recentDocs'    => $recentDocs,
-            'recentLogs'    => $recentLogs,    // Data log untuk widget aktivitas
+            'title'           => 'Dashboard',
+            'totalDokumen'    => $totalDokumen,
+            'totalAktif'      => $totalAktif,
+            'totalArsip'      => $totalArsip,
+            'totalKategori'   => $totalKategori,
+            'recentDocs'      => $recentDocs,
+            'recentLogs'      => $recentLogs,
+            'period'          => $period,
+            'activitySummary' => $activitySummary,
+            'categoryChart'   => $categoryChart,
+            'instansiChart'   => $instansiChart,
+            'activeTab'       => $activeTab,
         ];
 
         return view('dashboard/index', $data);

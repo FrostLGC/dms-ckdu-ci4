@@ -176,4 +176,40 @@ class AuditLogModel extends Model
 
         return $builder->get()->getResultArray();
     }
+
+    /**
+     * ============================================================
+     * Mengambil ringkasan aktivitas dokumen berdasarkan rentang periode
+     * ============================================================
+     * 
+     * @param int $days  Jumlah hari ke belakang
+     * @return array     Ringkasan jumlah untuk tiap aksi
+     */
+    public function getActivitySummaryByPeriod($days)
+    {
+        $dateThreshold = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+
+        $results = $this->db->table($this->table)
+            ->select('aksi, COUNT(*) as total')
+            ->whereIn('aksi', ['Upload', 'Edit', 'Revisi', 'Preview', 'Download'])
+            ->where('created_at >=', $dateThreshold)
+            ->groupBy('aksi')
+            ->get()
+            ->getResultArray();
+
+        // Default structure
+        $summary = [
+            'Upload' => 0,
+            'Edit' => 0,
+            'Revisi' => 0,
+            'Preview' => 0,
+            'Download' => 0,
+        ];
+
+        foreach ($results as $row) {
+            $summary[$row['aksi']] = (int) $row['total'];
+        }
+
+        return $summary;
+    }
 }
