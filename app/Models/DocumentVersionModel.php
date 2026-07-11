@@ -38,9 +38,26 @@ class DocumentVersionModel extends Model
      */
     public function getVersionsByDocumentId($documentId)
     {
-        return $this->where('document_id', $documentId)
+        return $this->select('document_versions.*, users.nama as nama_uploader')
+                    ->join('users', 'users.id = document_versions.uploaded_by', 'left')
+                    ->where('document_id', $documentId)
                     ->orderBy('nomor_versi', 'DESC')
                     ->findAll();
+    }
+
+    /**
+     * Ambil detail satu versi spesifik berdasarkan ID
+     * Termasuk nama uploader.
+     * 
+     * @param int $versionId ID dari tabel document_versions
+     * @return array|null    Data versi atau null
+     */
+    public function getVersionById($versionId)
+    {
+        return $this->select('document_versions.*, users.nama as nama_uploader')
+                    ->join('users', 'users.id = document_versions.uploaded_by', 'left')
+                    ->where('document_versions.id', $versionId)
+                    ->first();
     }
 
     /**

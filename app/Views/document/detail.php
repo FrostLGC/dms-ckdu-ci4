@@ -117,6 +117,86 @@
                 </div>
             </div>
         </div>
+
+        <!-- Card: Riwayat Versi Dokumen -->
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold" style="font-size:1rem;">
+                    <i class="bi bi-clock-history me-2" style="color:var(--dms-primary);"></i>
+                    Riwayat Versi Dokumen
+                </h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" style="font-size:.9rem;">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Versi</th>
+                                <th>Nama File</th>
+                                <th>Ukuran</th>
+                                <th>Catatan</th>
+                                <th>Diunggah Oleh</th>
+                                <th>Tanggal</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($versions)) : ?>
+                                <?php foreach ($versions as $index => $v) : ?>
+                                    <tr>
+                                        <td>
+                                            <?php if ($index === 0) : ?>
+                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">Versi Terbaru</span>
+                                            <?php else : ?>
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary border px-2 py-1">Versi <?= $v['nomor_versi'] ?></span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <div class="text-truncate" style="max-width:200px;" title="<?= esc($v['nama_file_asli']) ?>">
+                                                <?= esc($v['nama_file_asli']) ?>
+                                            </div>
+                                        </td>
+                                        <td class="text-nowrap">
+                                            <?php
+                                                $ukuran = $v['ukuran_file'];
+                                                if ($ukuran >= 1048576) {
+                                                    echo number_format($ukuran / 1048576, 1) . ' MB';
+                                                } elseif ($ukuran >= 1024) {
+                                                    echo number_format($ukuran / 1024, 1) . ' KB';
+                                                } else {
+                                                    echo $ukuran . ' B';
+                                                }
+                                            ?>
+                                        </td>
+                                        <td><?= esc($v['catatan'] ?: '-') ?></td>
+                                        <td><?= esc($v['nama_uploader'] ?? '-') ?></td>
+                                        <td class="text-nowrap"><?= date('d M Y, H:i', strtotime($v['created_at'])) ?></td>
+                                        <td class="text-nowrap">
+                                            <?php 
+                                                $ext = strtolower(pathinfo($v['nama_file_asli'], PATHINFO_EXTENSION));
+                                                $previewable = in_array($ext, ['pdf', 'jpg', 'jpeg', 'png']);
+                                            ?>
+                                            <?php if ($previewable) : ?>
+                                                <a href="<?= base_url('document/version/preview/' . $v['id']) ?>" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2" title="Preview">
+                                                    <i class="bi bi-eye-fill"></i>
+                                                </a>
+                                            <?php endif; ?>
+                                            <a href="<?= base_url('document/version/download/' . $v['id']) ?>" class="btn btn-sm btn-outline-secondary py-0 px-2" title="Download">
+                                                <i class="bi bi-download"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">Belum ada riwayat versi dokumen.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Kolom Kanan: Aksi Dokumen -->

@@ -47,6 +47,12 @@ $routes->get('document/preview/(:num)', 'Document::preview/$1');
 // GET /document/download/(:num) -> Download file
 $routes->get('document/download/(:num)', 'Document::download/$1');
 
+// GET /document/version/preview/(:num) -> Preview file dari versi terdahulu
+$routes->get('document/version/preview/(:num)', 'Document::previewVersion/$1');
+
+// GET /document/version/download/(:num) -> Download file dari versi terdahulu
+$routes->get('document/version/download/(:num)', 'Document::downloadVersion/$1');
+
 // POST /document/upload -> Proses upload dokumen
 $routes->post('document/upload', 'Document::upload');
 

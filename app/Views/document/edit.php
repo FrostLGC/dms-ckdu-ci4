@@ -197,6 +197,26 @@
                         </div>
                     </div>
 
+                    <!-- INPUT: Catatan Perubahan (Wajib) -->
+                    <div class="mb-4">
+                        <label for="catatan_revisi" class="form-label">
+                            Catatan Perubahan <span class="text-danger">*</span>
+                        </label>
+                        <input type="text"
+                               class="form-control <?= $validation->hasError('catatan_revisi') ? 'is-invalid' : '' ?>"
+                               id="catatan_revisi" name="catatan_revisi"
+                               value="<?= old('catatan_revisi') ?>"
+                               placeholder="Jelaskan perubahan yang dilakukan, contoh: Mengganti mitra menjadi Universitas Pamulang"
+                               required maxlength="255">
+                        <div class="form-text">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Catatan ini wajib diisi dan akan dicatat pada Audit Log. Jika file revisi diunggah, catatan juga akan tampil pada Riwayat Versi Dokumen.
+                        </div>
+                        <?php if ($validation->hasError('catatan_revisi')) : ?>
+                            <div class="invalid-feedback"><?= $validation->getError('catatan_revisi') ?></div>
+                        <?php endif; ?>
+                    </div>
+
                     <hr class="my-4">
 
                     <!-- TOMBOL AKSI -->

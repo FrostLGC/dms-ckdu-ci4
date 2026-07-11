@@ -141,18 +141,52 @@
                             <!-- Ikon aksi -->
                             <?php
                                 // Tentukan ikon dan warna berdasarkan jenis aksi
-                                $ikonAksi  = 'bi-cloud-arrow-up-fill';
-                                $warnaAksi = 'var(--dms-primary)';
-                                $bgAksi    = 'rgba(99, 102, 241, 0.1)';
+                                $aksiType = $log['aksi'];
+                                $ikonAksi  = 'bi-activity';
+                                $warnaAksi = 'var(--dms-secondary)';
+                                $bgAksi    = 'rgba(107, 114, 128, 0.1)';
 
-                                if ($log['aksi'] === 'Hapus') {
-                                    $ikonAksi  = 'bi-trash3-fill';
-                                    $warnaAksi = 'var(--dms-danger)';
-                                    $bgAksi    = 'rgba(239, 68, 68, 0.1)';
-                                } elseif ($log['aksi'] === 'Edit') {
-                                    $ikonAksi  = 'bi-pencil-fill';
-                                    $warnaAksi = 'var(--dms-warning)';
-                                    $bgAksi    = 'rgba(245, 158, 11, 0.1)';
+                                switch ($aksiType) {
+                                    case 'Upload':
+                                        $ikonAksi  = 'bi-cloud-arrow-up-fill';
+                                        $warnaAksi = 'var(--dms-primary)';
+                                        $bgAksi    = 'rgba(99, 102, 241, 0.1)';
+                                        break;
+                                    case 'Edit':
+                                        $ikonAksi  = 'bi-pencil-fill';
+                                        $warnaAksi = 'var(--dms-warning)';
+                                        $bgAksi    = 'rgba(245, 158, 11, 0.1)';
+                                        break;
+                                    case 'Revisi':
+                                        $ikonAksi  = 'bi-arrow-repeat';
+                                        $warnaAksi = 'var(--dms-info)';
+                                        $bgAksi    = 'rgba(6, 182, 212, 0.1)';
+                                        break;
+                                    case 'Hapus':
+                                        $ikonAksi  = 'bi-trash3-fill';
+                                        $warnaAksi = 'var(--dms-danger)';
+                                        $bgAksi    = 'rgba(239, 68, 68, 0.1)';
+                                        break;
+                                    case 'Preview':
+                                        $ikonAksi  = 'bi-eye-fill';
+                                        $warnaAksi = 'var(--dms-primary)';
+                                        $bgAksi    = 'rgba(99, 102, 241, 0.1)';
+                                        break;
+                                    case 'Download':
+                                        $ikonAksi  = 'bi-download';
+                                        $warnaAksi = 'var(--dms-success)';
+                                        $bgAksi    = 'rgba(34, 197, 94, 0.1)';
+                                        break;
+                                    case 'Cetak Laporan':
+                                        $ikonAksi  = 'bi-printer-fill';
+                                        $warnaAksi = 'var(--dms-secondary)';
+                                        $bgAksi    = 'rgba(107, 114, 128, 0.1)';
+                                        break;
+                                    case 'Download Paket':
+                                        $ikonAksi  = 'bi-file-earmark-zip-fill';
+                                        $warnaAksi = 'var(--dms-success)';
+                                        $bgAksi    = 'rgba(34, 197, 94, 0.1)';
+                                        break;
                                 }
                             ?>
                             <div style="width:36px; height:36px; border-radius:10px; background:<?= $bgAksi ?>; display:flex; align-items:center; justify-content:center; flex-shrink:0;">

@@ -196,9 +196,16 @@ class Document extends BaseController
             );
         }
 
+        // ============================================================
+        // Ambil riwayat versi
+        // ============================================================
+        $versionModel = new \App\Models\DocumentVersionModel();
+        $versions = $versionModel->getVersionsByDocumentId($id);
+
         $data = [
             'title'    => 'Detail Dokumen - ' . $document['judul'],
             'document' => $document,
+            'versions' => $versions,
         ];
 
         return view('document/detail', $data);
@@ -600,11 +607,24 @@ class Document extends BaseController
                     'max_length' => '{field} maksimal {param} karakter.',
                 ],
             ],
+            'catatan_revisi' => [
+                'label'  => 'Catatan Perubahan',
+                'rules'  => 'required|max_length[255]',
+                'errors' => [
+                    'required' => 'Catatan perubahan wajib diisi.',
+                    'max_length' => 'Catatan perubahan maksimal {param} karakter.',
+                ],
+            ],
         ];
+
+        // Pastikan catatan_revisi ditrim untuk mencegah lolos validasi jika hanya berisi spasi
+        $_POST['catatan_revisi'] = trim((string) $this->request->getPost('catatan_revisi'));
 
         // Validasi file hanya jika ada file yang diunggah
         $file = $this->request->getFile('dokumen');
-        if ($file && $file->isValid() && !$file->hasMoved()) {
+        $isFileRevision = $file && $file->isValid() && !$file->hasMoved();
+
+        if ($isFileRevision) {
             $rules['dokumen'] = [
                 'label'  => 'File Dokumen',
                 'rules'  => 'uploaded[dokumen]|max_size[dokumen,10240]|ext_in[dokumen,pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png]',
@@ -637,7 +657,7 @@ class Document extends BaseController
         // Jika user mengunggah file baru, artinya ini adalah REVISI dokumen.
         // File lama TIDAK dihapus (tetap tersimpan di server).
         // File baru disimpan sebagai versi terbaru.
-        if ($file && $file->isValid() && !$file->hasMoved()) {
+        if ($isFileRevision) {
             $namaAsli = $file->getClientName();
             $namaBaru = $file->getRandomName();
             $folderUpload = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . 'documents';
@@ -661,15 +681,19 @@ class Document extends BaseController
                                         ->first();
             $nomorVersiBaru = ($lastVersion ? $lastVersion['nomor_versi'] : 0) + 1;
 
+            $catatan = $_POST['catatan_revisi'];
+
             $versionModel->insert([
                 'document_id'    => $id,
                 'nomor_versi'    => $nomorVersiBaru,
                 'nama_file'      => $namaBaru,
                 'nama_file_asli' => $namaAsli,
                 'ukuran_file'    => $file->getSize(),
-                'catatan'        => 'Revisi versi ' . $nomorVersiBaru,
+                'catatan'        => $catatan,
                 'uploaded_by'    => session()->get('user_id') ?? 1,
             ]);
+        } else {
+            $nomorVersiBaru = null;
         }
 
         // Update data dokumen di database
@@ -678,13 +702,20 @@ class Document extends BaseController
         // ============================================================
         // LANGKAH 4: CATAT KE AUDIT LOG
         // ============================================================
-        $aksi = ($file && $file->isValid()) ? 'Revisi' : 'Edit';
+        $aksi = $isFileRevision ? 'Revisi' : 'Edit';
+        $judulDokumen = $this->request->getPost('judul');
+        $catatanPerubahan = $_POST['catatan_revisi'];
+
+        $keteranganLog = ($aksi === 'Revisi' && isset($nomorVersiBaru)) 
+                            ? 'Merevisi dokumen "' . $judulDokumen . '" menjadi versi ' . $nomorVersiBaru . "\nCatatan: " . $catatanPerubahan
+                            : 'Mengedit data dokumen "' . $judulDokumen . '"' . "\nCatatan: " . $catatanPerubahan;
+
         $auditLogModel = new \App\Models\AuditLogModel();
         $auditLogModel->insertLog([
             'user_id'       => session()->get('user_id') ?? 1,
             'aksi'          => $aksi,
-            'document_name' => $this->request->getPost('judul'),
-            'keterangan'    => 'Merevisi dokumen: "' . $this->request->getPost('judul') . '"',
+            'document_name' => $judulDokumen,
+            'keterangan'    => $keteranganLog,
         ]);
 
         return redirect()->to('/document')
@@ -828,5 +859,85 @@ class Document extends BaseController
 
         return $this->response->download($filePath, null)
             ->setFileName($document['nama_file_asli']);
+    }
+
+    /**
+     * ============================================================
+     * FUNGSI PREVIEW VERSI - Menampilkan preview file dari versi tertentu
+     * ============================================================
+     */
+    public function previewVersion($versionId = null)
+    {
+        $versionModel = new \App\Models\DocumentVersionModel();
+        $version = $versionModel->getVersionById($versionId);
+
+        if (!$version) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Versi dokumen tidak ditemukan.');
+        }
+
+        $document = $this->documentModel->getDocumentById($version['document_id']);
+        if (!$document) {
+            return redirect()->back()->with('error', 'Dokumen induk tidak ditemukan.');
+        }
+
+        $filePath = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . 'documents' . DIRECTORY_SEPARATOR . $version['nama_file'];
+
+        if (!file_exists($filePath)) {
+            return redirect()->back()->with('error', 'File versi dokumen tidak ditemukan di server.');
+        }
+
+        $ext = strtolower(pathinfo($version['nama_file_asli'], PATHINFO_EXTENSION));
+        $mimeTypes = [
+            'pdf'  => 'application/pdf',
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+        ];
+
+        if (!array_key_exists($ext, $mimeTypes)) {
+            return redirect()->back()->with('error', 'Format file ini tidak mendukung fitur preview. Silakan gunakan tombol Download.');
+        }
+
+        // Catat audit log preview
+        $this->logActivity('Preview', $document['judul'], 'Preview dokumen "' . $document['judul'] . '" versi ' . $version['nomor_versi']);
+
+        return $this->response
+            ->setHeader('Content-Type', $mimeTypes[$ext])
+            ->setHeader('Content-Disposition', 'inline; filename="' . $version['nama_file_asli'] . '"')
+            ->setHeader('Content-Length', (string) filesize($filePath))
+            ->setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->setBody(file_get_contents($filePath));
+    }
+
+    /**
+     * ============================================================
+     * FUNGSI DOWNLOAD VERSI - Mengunduh file dari versi tertentu
+     * ============================================================
+     */
+    public function downloadVersion($versionId = null)
+    {
+        $versionModel = new \App\Models\DocumentVersionModel();
+        $version = $versionModel->getVersionById($versionId);
+
+        if (!$version) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Versi dokumen tidak ditemukan.');
+        }
+
+        $document = $this->documentModel->getDocumentById($version['document_id']);
+        if (!$document) {
+            return redirect()->back()->with('error', 'Dokumen induk tidak ditemukan.');
+        }
+
+        $filePath = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . 'documents' . DIRECTORY_SEPARATOR . $version['nama_file'];
+
+        if (!file_exists($filePath)) {
+            return redirect()->back()->with('error', 'File versi dokumen tidak ditemukan di server.');
+        }
+
+        // Catat audit log download
+        $this->logActivity('Download', $document['judul'], 'Download dokumen "' . $document['judul'] . '" versi ' . $version['nomor_versi']);
+
+        return $this->response->download($filePath, null)
+            ->setFileName($version['nama_file_asli']);
     }
 }

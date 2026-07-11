@@ -106,15 +106,55 @@
                         <td>
                             <?php
                                 // Tentukan badge dan warna berdasarkan jenis aksi
-                                $badgeClass = 'bg-primary bg-opacity-10 text-primary';
-                                $ikonAksi   = 'bi-cloud-arrow-up-fill';
+                                $aksiType = $log['aksi'];
+                                $badgeClass = 'bg-secondary bg-opacity-10 text-secondary';
+                                $ikonAksi   = 'bi-activity';
 
-                                if ($log['aksi'] === 'Hapus') {
-                                    $badgeClass = 'bg-danger bg-opacity-10 text-danger';
-                                    $ikonAksi   = 'bi-trash3-fill';
-                                } elseif ($log['aksi'] === 'Edit') {
-                                    $badgeClass = 'bg-warning bg-opacity-10 text-warning';
-                                    $ikonAksi   = 'bi-pencil-fill';
+                                switch ($aksiType) {
+                                    case 'Login':
+                                        $ikonAksi = 'bi-box-arrow-in-right';
+                                        $badgeClass = 'bg-success bg-opacity-10 text-success';
+                                        break;
+                                    case 'Logout':
+                                        $ikonAksi = 'bi-box-arrow-right';
+                                        $badgeClass = 'bg-secondary bg-opacity-10 text-secondary';
+                                        break;
+                                    case 'Upload':
+                                        $ikonAksi = 'bi-cloud-arrow-up-fill';
+                                        $badgeClass = 'bg-primary bg-opacity-10 text-primary';
+                                        break;
+                                    case 'Edit':
+                                        $ikonAksi = 'bi-pencil-fill';
+                                        $badgeClass = 'bg-warning bg-opacity-10 text-warning';
+                                        break;
+                                    case 'Revisi':
+                                        $ikonAksi = 'bi-arrow-repeat';
+                                        $badgeClass = 'bg-info bg-opacity-10 text-info';
+                                        break;
+                                    case 'Hapus':
+                                        $ikonAksi = 'bi-trash3-fill';
+                                        $badgeClass = 'bg-danger bg-opacity-10 text-danger';
+                                        break;
+                                    case 'Preview':
+                                        $ikonAksi = 'bi-eye-fill';
+                                        $badgeClass = 'bg-primary bg-opacity-10 text-primary';
+                                        break;
+                                    case 'Download':
+                                        $ikonAksi = 'bi-download';
+                                        $badgeClass = 'bg-success bg-opacity-10 text-success';
+                                        break;
+                                    case 'Cetak Laporan':
+                                        $ikonAksi = 'bi-printer-fill';
+                                        $badgeClass = 'bg-secondary bg-opacity-10 text-secondary';
+                                        break;
+                                    case 'Download Paket':
+                                        $ikonAksi = 'bi-file-earmark-zip-fill';
+                                        $badgeClass = 'bg-success bg-opacity-10 text-success';
+                                        break;
+                                    case 'Akses Ditolak':
+                                        $ikonAksi = 'bi-shield-fill-exclamation';
+                                        $badgeClass = 'bg-danger bg-opacity-10 text-danger';
+                                        break;
                                 }
                             ?>
                             <span class="badge <?= $badgeClass ?>"
@@ -169,7 +209,11 @@
                             <?php endif; ?>
                         </td>
                         <td class="text-muted" style="font-size:.85rem;">
-                            <?= esc($log['keterangan'] ?? '—') ?>
+                            <?php
+                                $safeKet = esc($log['keterangan'] ?? '—');
+                                $safeKet = str_replace("\nCatatan:", "\n<span class=\"fw-semibold text-dark\">Catatan:</span>", $safeKet);
+                                echo nl2br($safeKet);
+                            ?>
                         </td>
                         <td style="font-size:.85rem;">
                             <i class="bi bi-person-fill me-1" style="color:var(--dms-primary); opacity:.5;"></i>
