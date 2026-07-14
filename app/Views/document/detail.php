@@ -257,14 +257,12 @@
                 <hr>
 
                 <!-- Tombol Hapus (dengan konfirmasi) -->
-                <form action="<?= base_url('document/delete/' . $document['id']) ?>"
-                      method="POST"
-                      onsubmit="return confirm('Yakin ingin menghapus dokumen ini? Aksi ini tidak bisa dibatalkan.')">
-                    <?= csrf_field() ?>
-                    <button type="submit" class="btn btn-outline-danger w-100" style="border-radius:10px;">
-                        <i class="bi bi-trash3-fill me-2"></i> Hapus Dokumen
-                    </button>
-                </form>
+                <button type="button" class="btn btn-outline-danger w-100" style="border-radius:10px;"
+                        data-bs-toggle="modal" data-bs-target="#deleteDocumentModal"
+                        data-document-title="<?= esc($document['judul']) ?>"
+                        data-delete-url="<?= base_url('document/delete/' . $document['id']) ?>">
+                    <i class="bi bi-trash3-fill me-2"></i> Hapus Dokumen
+                </button>
                 <?php endif; ?>
             </div>
         </div>
@@ -288,6 +286,57 @@
             </div>
         </div>
     </div>
+<!-- Modal Konfirmasi Hapus Dokumen -->
+<div class="modal fade" id="deleteDocumentModal" tabindex="-1" aria-labelledby="deleteDocumentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:12px; border:none; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="deleteDocumentModalLabel" style="color:var(--dms-dark);">Hapus Dokumen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center pt-4 pb-4">
+                <div class="mb-3">
+                    <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size:3rem; opacity:0.9;"></i>
+                </div>
+                <p class="mb-1" style="font-size:1.05rem;">
+                    Apakah Anda yakin ingin menghapus dokumen <strong id="deleteDocumentTitle"></strong>?
+                </p>
+                <p class="text-muted" style="font-size:.85rem;">
+                    Dokumen beserta riwayat versinya tidak dapat digunakan kembali setelah dihapus.
+                </p>
+            </div>
+            <div class="modal-footer border-0 pt-0 d-flex justify-content-center gap-2">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal" style="border-radius:8px;">Batal</button>
+                <form id="formDeleteDocument" method="POST" style="display:inline;">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="btn btn-danger px-4" style="border-radius:8px;">
+                        <i class="bi bi-trash3-fill me-1"></i> Ya, Hapus
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteDocumentModal = document.getElementById('deleteDocumentModal');
+    if (deleteDocumentModal) {
+        deleteDocumentModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const docTitle = button.getAttribute('data-document-title');
+            const deleteUrl = button.getAttribute('data-delete-url');
+
+            const modalDocTitle = deleteDocumentModal.querySelector('#deleteDocumentTitle');
+            const formDelete = deleteDocumentModal.querySelector('#formDeleteDocument');
+
+            if (modalDocTitle) modalDocTitle.textContent = docTitle;
+            if (formDelete) formDelete.setAttribute('action', deleteUrl);
+        });
+    }
+});
+</script>
 <?= $this->endSection() ?>

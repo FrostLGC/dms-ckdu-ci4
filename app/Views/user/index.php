@@ -89,15 +89,13 @@
                                 </a>
                                 <!-- Tombol Hapus (tidak bisa hapus diri sendiri) -->
                                 <?php if ($u['id'] != session()->get('user_id')) : ?>
-                                <form action="<?= base_url('user/delete/' . $u['id']) ?>"
-                                      method="POST" style="display:inline;"
-                                      onsubmit="return confirm('Yakin ingin menghapus pengguna &quot;<?= esc($u['nama']) ?>&quot;?')">
-                                    <?= csrf_field() ?>
-                                    <button type="submit" class="btn btn-sm btn-outline-danger"
-                                            title="Hapus" style="border-radius:8px;">
-                                        <i class="bi bi-trash3-fill"></i>
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-sm btn-outline-danger btn-delete-user"
+                                        title="Hapus" style="border-radius:8px;"
+                                        data-bs-toggle="modal" data-bs-target="#deleteUserModal"
+                                        data-user-name="<?= esc($u['nama']) ?>"
+                                        data-delete-url="<?= base_url('user/delete/' . $u['id']) ?>">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
                                 <?php else : ?>
                                 <button class="btn btn-sm btn-outline-secondary" disabled
                                         title="Tidak bisa hapus diri sendiri" style="border-radius:8px;">
@@ -132,4 +130,57 @@
 </div>
 <?php endif; ?>
 
+<!-- Modal Konfirmasi Hapus Pengguna -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:12px; border:none; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="deleteUserModalLabel" style="color:var(--dms-dark);">Hapus Pengguna</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center pt-4 pb-4">
+                <div class="mb-3">
+                    <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size:3rem; opacity:0.9;"></i>
+                </div>
+                <p class="mb-1" style="font-size:1.05rem;">
+                    Apakah Anda yakin ingin menghapus pengguna <strong id="deleteUserName"></strong>?
+                </p>
+                <p class="text-muted" style="font-size:.85rem;">
+                    Akun yang sudah dihapus tidak dapat digunakan untuk masuk ke sistem.
+                </p>
+            </div>
+            <div class="modal-footer border-0 pt-0 d-flex justify-content-center gap-2">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal" style="border-radius:8px;">Batal</button>
+                <form id="formDeleteUser" method="POST" style="display:inline;">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="btn btn-danger px-4" style="border-radius:8px;">
+                        <i class="bi bi-trash3-fill me-1"></i> Ya, Hapus
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteUserModal = document.getElementById('deleteUserModal');
+    if (deleteUserModal) {
+        deleteUserModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const userName = button.getAttribute('data-user-name');
+            const deleteUrl = button.getAttribute('data-delete-url');
+
+            const modalUserName = deleteUserModal.querySelector('#deleteUserName');
+            const formDelete = deleteUserModal.querySelector('#formDeleteUser');
+
+            if (modalUserName) modalUserName.textContent = userName;
+            if (formDelete) formDelete.setAttribute('action', deleteUrl);
+        });
+    }
+});
+</script>
 <?= $this->endSection() ?>

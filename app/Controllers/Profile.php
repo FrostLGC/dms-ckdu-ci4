@@ -57,7 +57,7 @@ class Profile extends BaseController
         $rules = [
             'nama' => [
                 'label'  => 'Nama Lengkap',
-                'rules'  => 'required|min_length[3]|max_length[100]',
+                'rules'  => 'required|trim|min_length[2]|max_length[100]',
                 'errors' => [
                     'required'   => '{field} wajib diisi.',
                     'min_length' => '{field} minimal {param} karakter.',
@@ -66,10 +66,11 @@ class Profile extends BaseController
             ],
             'email' => [
                 'label'  => 'Email',
-                'rules'  => "required|valid_email|is_unique[users.email,id,{$userId}]",
+                'rules'  => "required|trim|valid_email|max_length[255]|is_unique[users.email,id,{$userId}]",
                 'errors' => [
                     'required'    => '{field} wajib diisi.',
                     'valid_email' => 'Format {field} tidak valid.',
+                    'max_length'  => '{field} maksimal {param} karakter.',
                     'is_unique'   => '{field} "{value}" sudah digunakan oleh pengguna lain.',
                 ],
             ],
@@ -87,7 +88,9 @@ class Profile extends BaseController
         }
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput();
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
         }
 
         // Siapkan data update
@@ -110,6 +113,8 @@ class Profile extends BaseController
                 'user_nama'  => $dataUpdate['nama'],
                 'user_email' => $dataUpdate['email'],
             ]);
+            
+            $this->logActivity('Edit Profil', $dataUpdate['nama'], 'Memperbarui profil diri sendiri');
         }
 
         return redirect()->to('/profile')

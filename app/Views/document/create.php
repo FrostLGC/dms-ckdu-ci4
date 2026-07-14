@@ -24,6 +24,27 @@
                 </h5>
             </div>
             <div class="card-body" style="padding:28px;">
+                <?php $errors = session()->getFlashdata('errors'); ?>
+                
+                <?php if (!empty($errors)) : ?>
+                <div class="alert alert-danger animate-in" role="alert" style="border-radius:10px;">
+                    <div class="d-flex gap-2">
+                        <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+                        <div>
+                            <strong class="d-block mb-1">Terdapat kesalahan pada form:</strong>
+                            <ul class="mb-0 ps-3" style="font-size: 0.9rem;">
+                            <?php foreach ($errors as $error) : ?>
+                                <li><?= esc($error) ?></li>
+                            <?php endforeach ?>
+                            </ul>
+                            <div class="mt-2 small text-danger fw-bold border-top border-danger pt-2">
+                                <i class="bi bi-info-circle me-1"></i> File Dokumen perlu dipilih ulang karena pembatasan keamanan browser.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <!--
                     form_open_multipart() = buat <form> dengan:
                     1. method="POST"
@@ -38,16 +59,16 @@
                             Nomor Dokumen / Surat <span class="text-muted">(Opsional)</span>
                         </label>
                         <input type="text"
-                               class="form-control <?= $validation->hasError('nomor_dokumen') ? 'is-invalid' : '' ?>"
+                               class="form-control <?= isset($errors['nomor_dokumen']) ? 'is-invalid' : '' ?>"
                                id="nomor_dokumen" name="nomor_dokumen"
-                               value="<?= old('nomor_dokumen') ?>"
-                               placeholder="Contoh: 001/HRD/CKDU/I/2026">
+                               value="<?= esc(old('nomor_dokumen')) ?>"
+                               placeholder="Contoh: 001/HRD/CKDU/I/2026" maxlength="100">
                         <div class="form-text">
                             <i class="bi bi-info-circle me-1"></i>
                             Kosongkan jika dokumen tidak memiliki nomor dokumen atau nomor surat.
                         </div>
-                        <?php if ($validation->hasError('nomor_dokumen')) : ?>
-                            <div class="invalid-feedback"><?= $validation->getError('nomor_dokumen') ?></div>
+                        <?php if (isset($errors['nomor_dokumen'])) : ?>
+                            <div class="invalid-feedback"><?= esc($errors['nomor_dokumen']) ?></div>
                         <?php endif; ?>
                     </div>
 
@@ -57,16 +78,12 @@
                             Judul Dokumen <span class="text-danger">*</span>
                         </label>
                         <input type="text"
-                               class="form-control <?= $validation->hasError('judul') ? 'is-invalid' : '' ?>"
+                               class="form-control <?= isset($errors['judul']) ? 'is-invalid' : '' ?>"
                                id="judul" name="judul"
-                               value="<?= old('judul') ?>"
-                               placeholder="Contoh: Kontrak Proyek Pembangunan Gedung A">
-                        <!--
-                            is-invalid = class Bootstrap untuk menandai field yang error (border merah)
-                            invalid-feedback = class Bootstrap untuk menampilkan pesan error di bawah field
-                        -->
-                        <?php if ($validation->hasError('judul')) : ?>
-                            <div class="invalid-feedback"><?= $validation->getError('judul') ?></div>
+                               value="<?= esc(old('judul')) ?>"
+                               placeholder="Contoh: Kontrak Proyek Pembangunan Gedung A" required maxlength="255">
+                        <?php if (isset($errors['judul'])) : ?>
+                            <div class="invalid-feedback"><?= esc($errors['judul']) ?></div>
                         <?php endif; ?>
                     </div>
 
@@ -75,8 +92,8 @@
                         <label for="category_id" class="form-label">
                             Kategori <span class="text-danger">*</span>
                         </label>
-                        <select class="form-select <?= $validation->hasError('category_id') ? 'is-invalid' : '' ?>"
-                                id="category_id" name="category_id">
+                        <select class="form-select <?= isset($errors['category_id']) ? 'is-invalid' : '' ?>"
+                                id="category_id" name="category_id" required>
                             <option value=""> Pilih Kategori </option>
                             <?php foreach ($categories as $cat) : ?>
                                 <option value="<?= $cat['id'] ?>"
@@ -85,8 +102,8 @@
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <?php if ($validation->hasError('category_id')) : ?>
-                            <div class="invalid-feedback"><?= $validation->getError('category_id') ?></div>
+                        <?php if (isset($errors['category_id'])) : ?>
+                            <div class="invalid-feedback"><?= esc($errors['category_id']) ?></div>
                         <?php endif; ?>
                     </div>
 
@@ -95,7 +112,7 @@
                         <label for="instansi_id" class="form-label">
                             Instansi / Mitra Kerja
                         </label>
-                        <select class="form-select <?= $validation->hasError('instansi_id') ? 'is-invalid' : '' ?>"
+                        <select class="form-select <?= isset($errors['instansi_id']) ? 'is-invalid' : '' ?>"
                                 id="instansi_id" name="instansi_id">
                             <option value=""> Opsional (Internal CKDU) </option>
                             <?php foreach ($instansis as $inst) : ?>
@@ -105,17 +122,20 @@
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <?php if ($validation->hasError('instansi_id')) : ?>
-                            <div class="invalid-feedback"><?= $validation->getError('instansi_id') ?></div>
+                        <?php if (isset($errors['instansi_id'])) : ?>
+                            <div class="invalid-feedback"><?= esc($errors['instansi_id']) ?></div>
                         <?php endif; ?>
                     </div>
 
                     <!-- INPUT: Deskripsi (Textarea) -->
                     <div class="mb-4">
                         <label for="deskripsi" class="form-label">Deskripsi</label>
-                        <textarea class="form-control" id="deskripsi" name="deskripsi"
+                        <textarea class="form-control <?= isset($errors['deskripsi']) ? 'is-invalid' : '' ?>" id="deskripsi" name="deskripsi"
                                   rows="3"
-                                  placeholder="Jelaskan isi dokumen secara singkat (opsional)"><?= old('deskripsi') ?></textarea>
+                                  placeholder="Jelaskan isi dokumen secara singkat (opsional)" maxlength="1000"><?= esc(old('deskripsi')) ?></textarea>
+                        <?php if (isset($errors['deskripsi'])) : ?>
+                            <div class="invalid-feedback"><?= esc($errors['deskripsi']) ?></div>
+                        <?php endif; ?>
                     </div>
 
                     <!-- INPUT: File Dokumen (Upload) -->
@@ -124,16 +144,16 @@
                             File Dokumen <span class="text-danger">*</span>
                         </label>
                         <input type="file"
-                               class="form-control <?= $validation->hasError('dokumen') ? 'is-invalid' : '' ?>"
+                               class="form-control <?= isset($errors['dokumen']) ? 'is-invalid' : '' ?>"
                                id="dokumen" name="dokumen"
-                               accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png">
+                               accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png" required>
                         <!-- Informasi format yang diizinkan -->
                         <div class="form-text">
                             <i class="bi bi-info-circle me-1"></i>
                             Format: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, JPG, PNG. Maks: 10 MB.
                         </div>
-                        <?php if ($validation->hasError('dokumen')) : ?>
-                            <div class="invalid-feedback d-block"><?= $validation->getError('dokumen') ?></div>
+                        <?php if (isset($errors['dokumen'])) : ?>
+                            <div class="invalid-feedback d-block"><?= esc($errors['dokumen']) ?></div>
                         <?php endif; ?>
                     </div>
 

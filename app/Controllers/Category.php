@@ -166,8 +166,9 @@ class Category extends BaseController
 
         // Jalankan validasi
         if (!$this->validate($rules)) {
-            // Gagal -> kembali ke form dengan pesan error
-            return redirect()->back()->withInput();
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
         }
 
         // Simpan ke database via Model

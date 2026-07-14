@@ -24,6 +24,24 @@
                 </h5>
             </div>
             <div class="card-body" style="padding:28px;">
+                <?php $errors = session()->getFlashdata('errors'); ?>
+                
+                <?php if (!empty($errors)) : ?>
+                <div class="alert alert-danger animate-in" role="alert" style="border-radius:10px;">
+                    <div class="d-flex gap-2">
+                        <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+                        <div>
+                            <strong class="d-block mb-1">Terdapat kesalahan pada form:</strong>
+                            <ul class="mb-0 ps-3" style="font-size: 0.9rem;">
+                            <?php foreach ($errors as $error) : ?>
+                                <li><?= esc($error) ?></li>
+                            <?php endforeach ?>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <!--
                     form_open() = buat <form method="POST"> dengan CSRF token otomatis
                     Action mengarah ke /category/store (fungsi yang menyimpan data)
@@ -36,24 +54,24 @@
                             Nama Kategori <span class="text-danger">*</span>
                         </label>
                         <input type="text"
-                               class="form-control <?= $validation->hasError('nama_kategori') ? 'is-invalid' : '' ?>"
+                               class="form-control <?= isset($errors['nama_kategori']) ? 'is-invalid' : '' ?>"
                                id="nama_kategori" name="nama_kategori"
-                               value="<?= old('nama_kategori') ?>"
-                               placeholder="Contoh: Surat Kontrak, Laporan Keuangan, dll.">
-                        <?php if ($validation->hasError('nama_kategori')) : ?>
-                            <div class="invalid-feedback"><?= $validation->getError('nama_kategori') ?></div>
+                               value="<?= esc(old('nama_kategori')) ?>"
+                               placeholder="Contoh: Surat Kontrak, Laporan Keuangan, dll." required maxlength="100">
+                        <?php if (isset($errors['nama_kategori'])) : ?>
+                            <div class="invalid-feedback"><?= esc($errors['nama_kategori']) ?></div>
                         <?php endif; ?>
                     </div>
 
                     <!-- INPUT: Deskripsi (Opsional) -->
                     <div class="mb-4">
                         <label for="deskripsi" class="form-label">Deskripsi</label>
-                        <textarea class="form-control <?= $validation->hasError('deskripsi') ? 'is-invalid' : '' ?>"
+                        <textarea class="form-control <?= isset($errors['deskripsi']) ? 'is-invalid' : '' ?>"
                                   id="deskripsi" name="deskripsi"
                                   rows="3"
-                                  placeholder="Jelaskan kegunaan kategori ini (opsional)"><?= old('deskripsi') ?></textarea>
-                        <?php if ($validation->hasError('deskripsi')) : ?>
-                            <div class="invalid-feedback"><?= $validation->getError('deskripsi') ?></div>
+                                  placeholder="Jelaskan kegunaan kategori ini (opsional)" maxlength="500"><?= esc(old('deskripsi')) ?></textarea>
+                        <?php if (isset($errors['deskripsi'])) : ?>
+                            <div class="invalid-feedback"><?= esc($errors['deskripsi']) ?></div>
                         <?php endif; ?>
                     </div>
 

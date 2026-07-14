@@ -292,10 +292,16 @@ class Document extends BaseController
         // Di CI4, cukup definisikan aturannya dalam array:
 
         $rules = [
+            'nomor_dokumen' => [
+                'label'  => 'Nomor Dokumen',
+                'rules'  => 'permit_empty|trim|max_length[100]',
+                'errors' => [
+                    'max_length' => '{field} maksimal {param} karakter.',
+                ],
+            ],
             'judul' => [
                 'label'  => 'Judul Dokumen',
-                'rules'  => 'required|min_length[3]|max_length[255]',
-                // Pesan error kustom dalam Bahasa Indonesia
+                'rules'  => 'required|trim|min_length[3]|max_length[255]',
                 'errors' => [
                     'required'   => '{field} wajib diisi.',
                     'min_length' => '{field} minimal {param} karakter.',
@@ -307,36 +313,39 @@ class Document extends BaseController
                 'rules'  => 'required|numeric',
                 'errors' => [
                     'required' => '{field} wajib dipilih.',
-                    'numeric'  => '{field} harus berupa angka.',
+                    'numeric'  => '{field} harus berupa angka valid.',
+                ],
+            ],
+            'instansi_id' => [
+                'label'  => 'Instansi',
+                'rules'  => 'permit_empty|numeric',
+                'errors' => [
+                    'numeric'  => '{field} harus berupa angka valid.',
+                ],
+            ],
+            'deskripsi' => [
+                'label'  => 'Deskripsi',
+                'rules'  => 'permit_empty|trim|max_length[1000]',
+                'errors' => [
+                    'max_length' => '{field} maksimal {param} karakter.',
                 ],
             ],
             'dokumen' => [
                 'label'  => 'File Dokumen',
-                // Aturan validasi file CI4:
-                // uploaded[dokumen]     = pastikan file benar-benar diupload
-                // max_size[dokumen,10240] = maksimal 10MB (10240 KB)
-                // ext_in[...]           = hanya boleh ekstensi tertentu
                 'rules'  => 'uploaded[dokumen]|max_size[dokumen,10240]|ext_in[dokumen,pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png]',
                 'errors' => [
-                    'uploaded' => '{field} wajib diupload.',
-                    'max_size' => '{field} maksimal 10 MB.',
-                    'ext_in'   => '{field} harus berformat: pdf, doc, docx, xls, xlsx, ppt, pptx, jpg, jpeg, atau png.',
-                ],
-            ],
-            'nomor_dokumen' => [
-                'label'  => 'Nomor Dokumen',
-                'rules'  => 'permit_empty|max_length[100]',
-                'errors' => [
-                    'max_length' => '{field} maksimal {param} karakter.',
+                    'uploaded' => '{field} wajib dipilih.',
+                    'max_size' => 'Ukuran file maksimal 10 MB.',
+                    'ext_in'   => 'Format file tidak didukung.',
                 ],
             ],
         ];
 
         // Jalankan validasi. Jika GAGAL, kembali ke halaman form dengan pesan error
         if (!$this->validate($rules)) {
-            // withInput() = bawa kembali data yang sudah diketik user agar tidak hilang
-            // Sama seperti di PHP Native: value="[php] $_POST['judul'] ?? '' [/php]"
-            return redirect()->back()->withInput();
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
         }
 
         // ============================================================

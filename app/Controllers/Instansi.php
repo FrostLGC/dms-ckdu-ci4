@@ -75,17 +75,34 @@ class Instansi extends BaseController
         $rules = [
             'nama_instansi' => [
                 'label'  => 'Nama Instansi',
-                'rules'  => 'required|min_length[3]|max_length[255]',
+                'rules'  => 'required|trim|max_length[255]|is_unique[instansi.nama_instansi]',
                 'errors' => [
                     'required'   => '{field} wajib diisi.',
-                    'min_length' => '{field} minimal {param} karakter.',
                     'max_length' => '{field} maksimal {param} karakter.',
+                    'is_unique'  => '{field} sudah digunakan. Gunakan nama lain.',
+                ],
+            ],
+            'alamat' => [
+                'label'  => 'Alamat',
+                'rules'  => 'permit_empty|trim|max_length[500]',
+                'errors' => [
+                    'max_length' => '{field} maksimal {param} karakter.',
+                ],
+            ],
+            'no_telp' => [
+                'label'  => 'Nomor Telepon',
+                'rules'  => 'permit_empty|max_length[20]|regex_match[/^[0-9\s\+\-\(\)]+$/]',
+                'errors' => [
+                    'max_length'  => '{field} maksimal {param} karakter.',
+                    'regex_match' => 'Format {field} tidak valid. Hanya boleh berisi angka, spasi, +, -, dan tanda kurung.',
                 ],
             ],
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput();
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
         }
 
         $this->instansiModel->insert([

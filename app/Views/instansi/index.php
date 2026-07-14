@@ -92,15 +92,13 @@
                                     <i class="bi bi-pencil-fill"></i>
                                 </a>
                                 <!-- Tombol Hapus -->
-                                <form action="<?= base_url('instansi/delete/' . $item['id']) ?>"
-                                      method="POST" style="display:inline;"
-                                      onsubmit="return confirm('Yakin ingin menghapus instansi &quot;<?= esc($item['nama_instansi']) ?>&quot;?')">
-                                    <?= csrf_field() ?>
-                                    <button type="submit" class="btn btn-sm btn-outline-danger"
-                                            title="Hapus" style="border-radius:8px;">
-                                        <i class="bi bi-trash3-fill"></i>
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                        title="Hapus" style="border-radius:8px;"
+                                        data-bs-toggle="modal" data-bs-target="#deleteInstansiModal"
+                                        data-instansi-name="<?= esc($item['nama_instansi']) ?>"
+                                        data-delete-url="<?= base_url('instansi/delete/' . $item['id']) ?>">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
                             </div>
                             <?php else : ?>
                                 <span class="text-muted">&mdash;</span>
@@ -136,4 +134,57 @@
 </div>
 <?php endif; ?>
 
+<!-- Modal Konfirmasi Hapus Instansi -->
+<div class="modal fade" id="deleteInstansiModal" tabindex="-1" aria-labelledby="deleteInstansiModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:12px; border:none; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="deleteInstansiModalLabel" style="color:var(--dms-dark);">Hapus Instansi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center pt-4 pb-4">
+                <div class="mb-3">
+                    <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size:3rem; opacity:0.9;"></i>
+                </div>
+                <p class="mb-1" style="font-size:1.05rem;">
+                    Apakah Anda yakin ingin menghapus instansi <strong id="deleteInstansiName"></strong>?
+                </p>
+                <p class="text-muted" style="font-size:.85rem;">
+                    Dokumen yang sebelumnya terhubung dengan instansi ini akan tetap tersimpan.
+                </p>
+            </div>
+            <div class="modal-footer border-0 pt-0 d-flex justify-content-center gap-2">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal" style="border-radius:8px;">Batal</button>
+                <form id="formDeleteInstansi" method="POST" style="display:inline;">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="btn btn-danger px-4" style="border-radius:8px;">
+                        <i class="bi bi-trash3-fill me-1"></i> Ya, Hapus
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteInstansiModal = document.getElementById('deleteInstansiModal');
+    if (deleteInstansiModal) {
+        deleteInstansiModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const instansiName = button.getAttribute('data-instansi-name');
+            const deleteUrl = button.getAttribute('data-delete-url');
+
+            const modalInstansiName = deleteInstansiModal.querySelector('#deleteInstansiName');
+            const formDelete = deleteInstansiModal.querySelector('#formDeleteInstansi');
+
+            if (modalInstansiName) modalInstansiName.textContent = instansiName;
+            if (formDelete) formDelete.setAttribute('action', deleteUrl);
+        });
+    }
+});
+</script>
 <?= $this->endSection() ?>

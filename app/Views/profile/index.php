@@ -63,6 +63,24 @@
                 </h5>
             </div>
             <div class="card-body" style="padding:28px;">
+                <?php $errors = session()->getFlashdata('errors'); ?>
+                
+                <?php if (!empty($errors)) : ?>
+                <div class="alert alert-danger animate-in" role="alert" style="border-radius:10px;">
+                    <div class="d-flex gap-2">
+                        <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+                        <div>
+                            <strong class="d-block mb-1">Terdapat kesalahan pada form:</strong>
+                            <ul class="mb-0 ps-3" style="font-size: 0.9rem;">
+                            <?php foreach ($errors as $error) : ?>
+                                <li><?= esc($error) ?></li>
+                            <?php endforeach ?>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <?= form_open('profile/update') ?>
 
                     <!-- Nama Lengkap -->
@@ -71,11 +89,11 @@
                             Nama Lengkap <span class="text-danger">*</span>
                         </label>
                         <input type="text"
-                               class="form-control <?= $validation->hasError('nama') ? 'is-invalid' : '' ?>"
+                               class="form-control <?= isset($errors['nama']) ? 'is-invalid' : '' ?>"
                                id="nama" name="nama"
-                               value="<?= old('nama', $user['nama']) ?>">
-                        <?php if ($validation->hasError('nama')) : ?>
-                            <div class="invalid-feedback"><?= $validation->getError('nama') ?></div>
+                               value="<?= esc(old('nama', $user['nama'])) ?>" required minlength="2" maxlength="100">
+                        <?php if (isset($errors['nama'])) : ?>
+                            <div class="invalid-feedback"><?= esc($errors['nama']) ?></div>
                         <?php endif; ?>
                     </div>
 
@@ -85,11 +103,11 @@
                             Email <span class="text-danger">*</span>
                         </label>
                         <input type="email"
-                               class="form-control <?= $validation->hasError('email') ? 'is-invalid' : '' ?>"
+                               class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>"
                                id="email" name="email"
-                               value="<?= old('email', $user['email']) ?>">
-                        <?php if ($validation->hasError('email')) : ?>
-                            <div class="invalid-feedback"><?= $validation->getError('email') ?></div>
+                               value="<?= esc(old('email', $user['email'])) ?>" required maxlength="255">
+                        <?php if (isset($errors['email'])) : ?>
+                            <div class="invalid-feedback"><?= esc($errors['email']) ?></div>
                         <?php endif; ?>
                     </div>
 
@@ -101,11 +119,11 @@
                             Password Baru
                         </label>
                         <input type="password"
-                               class="form-control <?= $validation->hasError('password') ? 'is-invalid' : '' ?>"
+                               class="form-control <?= isset($errors['password']) ? 'is-invalid' : '' ?>"
                                id="password" name="password"
-                               placeholder="Kosongkan jika tidak ingin mengubah password">
-                        <?php if ($validation->hasError('password')) : ?>
-                            <div class="invalid-feedback"><?= $validation->getError('password') ?></div>
+                               placeholder="Kosongkan jika tidak ingin mengubah password" minlength="6">
+                        <?php if (isset($errors['password'])) : ?>
+                            <div class="invalid-feedback"><?= esc($errors['password']) ?></div>
                         <?php endif; ?>
                         <div class="form-text">
                             <i class="bi bi-info-circle me-1"></i>
