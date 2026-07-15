@@ -179,6 +179,93 @@ class AuditLogModel extends Model
 
     /**
      * ============================================================
+     * Hitung total log aktivitas dengan filter (untuk pagination)
+     * ============================================================
+     *
+     * @param array $filters  Filter: keyword, action, user_id, start_date, end_date
+     * @return int
+     */
+    public function countFilteredLogs(array $filters = []): int
+    {
+        $builder = $this->db->table('audit_logs AS a')
+            ->select('a.id')
+            ->join('users AS u', 'u.id = a.user_id', 'left');
+
+        if (!empty($filters['keyword'])) {
+            $kw = $filters['keyword'];
+            $builder->groupStart()
+                ->like('a.aksi', $kw)
+                ->orLike('a.document_name', $kw)
+                ->orLike('a.keterangan', $kw)
+                ->orLike('u.nama', $kw)
+                ->groupEnd();
+        }
+
+        if (!empty($filters['action'])) {
+            $builder->like('a.aksi', $filters['action'], 'none');
+        }
+
+        if (!empty($filters['user_id'])) {
+            $builder->where('a.user_id', (int) $filters['user_id']);
+        }
+
+        if (!empty($filters['start_date'])) {
+            $builder->where('a.created_at >=', $filters['start_date'] . ' 00:00:00');
+        }
+        if (!empty($filters['end_date'])) {
+            $builder->where('a.created_at <=', $filters['end_date'] . ' 23:59:59');
+        }
+
+        return (int) $builder->countAllResults();
+    }
+
+    /**
+     * ============================================================
+     * Ambil log aktivitas terfilter dengan LIMIT + OFFSET (pagination)
+     * ============================================================
+     *
+     * @param array $filters  Filter: keyword, action, user_id, start_date, end_date
+     * @param int   $limit    Jumlah per halaman
+     * @param int   $offset   Posisi mulai data
+     * @return array
+     */
+    public function getFilteredLogsPaginated(array $filters = [], int $limit = 10, int $offset = 0): array
+    {
+        $builder = $this->db->table('audit_logs AS a')
+            ->select('a.*, u.nama AS nama_user')
+            ->join('users AS u', 'u.id = a.user_id', 'left')
+            ->orderBy('a.created_at', 'DESC');
+
+        if (!empty($filters['keyword'])) {
+            $kw = $filters['keyword'];
+            $builder->groupStart()
+                ->like('a.aksi', $kw)
+                ->orLike('a.document_name', $kw)
+                ->orLike('a.keterangan', $kw)
+                ->orLike('u.nama', $kw)
+                ->groupEnd();
+        }
+
+        if (!empty($filters['action'])) {
+            $builder->like('a.aksi', $filters['action'], 'none');
+        }
+
+        if (!empty($filters['user_id'])) {
+            $builder->where('a.user_id', (int) $filters['user_id']);
+        }
+
+        if (!empty($filters['start_date'])) {
+            $builder->where('a.created_at >=', $filters['start_date'] . ' 00:00:00');
+        }
+        if (!empty($filters['end_date'])) {
+            $builder->where('a.created_at <=', $filters['end_date'] . ' 23:59:59');
+        }
+
+        return $builder->limit($limit, $offset)->get()->getResultArray();
+    }
+
+    /**
+     * ============================================================
      * Mengambil ringkasan aktivitas dokumen berdasarkan rentang periode
      * ============================================================
      * 

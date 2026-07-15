@@ -190,6 +190,112 @@ class DocumentModel extends Model
     }
 
     /**
+     * Hitung total dokumen berdasarkan filter (untuk pagination)
+     * 
+     * @param array $filters Array filter opsional
+     * @return int Total jumlah dokumen yang cocok
+     */
+    public function countFilteredDocuments($filters = []): int
+    {
+        $builder = $this->db->table('documents AS d')
+            ->select('d.id')
+            ->join('categories AS c', 'c.id = d.category_id', 'left')
+            ->join('instansi AS i', 'i.id = d.instansi_id', 'left')
+            ->join('users AS u', 'u.id = d.uploaded_by', 'left');
+
+        if (!empty($filters['keyword'])) {
+            $builder->groupStart()
+                        ->like('d.judul', $filters['keyword'])
+                        ->orLike('d.deskripsi', $filters['keyword'])
+                        ->orLike('d.nomor_dokumen', $filters['keyword'])
+                    ->groupEnd();
+        }
+
+        if (!empty($filters['category_id'])) {
+            $builder->where('d.category_id', $filters['category_id']);
+        }
+        if (!empty($filters['status'])) {
+            $builder->where('d.status', $filters['status']);
+        }
+        if (!empty($filters['instansi_id'])) {
+            $builder->where('d.instansi_id', $filters['instansi_id']);
+        }
+        if (!empty($filters['uploaded_by'])) {
+            $builder->where('d.uploaded_by', $filters['uploaded_by']);
+        }
+        if (!empty($filters['start_date'])) {
+            $builder->where('DATE(d.created_at) >=', $filters['start_date']);
+        }
+        if (!empty($filters['end_date'])) {
+            $builder->where('DATE(d.created_at) <=', $filters['end_date']);
+        }
+
+        return (int) $builder->countAllResults();
+    }
+
+    /**
+     * Ambil dokumen dengan filter, limit, dan offset (untuk pagination)
+     * 
+     * @param array $filters Array filter opsional
+     * @param int $limit Jumlah data per halaman
+     * @param int $offset Indeks mulai data
+     * @return array Array data dokumen
+     */
+    public function getDocumentsPaginated($filters = [], int $limit = 10, int $offset = 0): array
+    {
+        $builder = $this->db->table('documents AS d')
+            ->select('
+                d.id,
+                d.judul,
+                d.deskripsi,
+                d.nama_file,
+                d.nama_file_asli,
+                d.ukuran_file,
+                d.tipe_file,
+                d.nomor_dokumen,
+                d.status,
+                d.created_at,
+                d.updated_at,
+                c.nama_kategori,
+                i.nama_instansi,
+                u.nama AS nama_uploader
+            ')
+            ->join('categories AS c', 'c.id = d.category_id', 'left')
+            ->join('instansi AS i', 'i.id = d.instansi_id', 'left')
+            ->join('users AS u', 'u.id = d.uploaded_by', 'left');
+
+        if (!empty($filters['keyword'])) {
+            $builder->groupStart()
+                        ->like('d.judul', $filters['keyword'])
+                        ->orLike('d.deskripsi', $filters['keyword'])
+                        ->orLike('d.nomor_dokumen', $filters['keyword'])
+                    ->groupEnd();
+        }
+
+        if (!empty($filters['category_id'])) {
+            $builder->where('d.category_id', $filters['category_id']);
+        }
+        if (!empty($filters['status'])) {
+            $builder->where('d.status', $filters['status']);
+        }
+        if (!empty($filters['instansi_id'])) {
+            $builder->where('d.instansi_id', $filters['instansi_id']);
+        }
+        if (!empty($filters['uploaded_by'])) {
+            $builder->where('d.uploaded_by', $filters['uploaded_by']);
+        }
+        if (!empty($filters['start_date'])) {
+            $builder->where('DATE(d.created_at) >=', $filters['start_date']);
+        }
+        if (!empty($filters['end_date'])) {
+            $builder->where('DATE(d.created_at) <=', $filters['end_date']);
+        }
+
+        $builder->orderBy('d.created_at', 'DESC');
+        return $builder->limit($limit, $offset)->get()->getResultArray();
+    }
+
+    /**
      * Ambil 1 dokumen berdasarkan ID beserta detail kategori dan uploader.
      * 
      * Perbandingan dengan PHP Native:

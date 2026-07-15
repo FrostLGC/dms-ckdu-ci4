@@ -214,7 +214,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php $no = 1; foreach ($documents as $doc) : ?>
+                    <?php $no = $offset + 1; foreach ($documents as $doc) : ?>
                     <tr>
                         <td class="text-muted"><?= $no++ ?></td>
                         <td>
@@ -310,13 +310,75 @@
             </table>
         </div>
     </div>
-    <!-- Footer tabel: jumlah dokumen -->
-    <div class="card-footer bg-transparent text-muted" style="font-size:.8rem; padding:12px 22px;">
-        <?php if ($hasFilter) : ?>
-            Ditemukan <strong><?= count($documents) ?></strong> dokumen sesuai filter
-        <?php else : ?>
-            Menampilkan <?= count($documents) ?> dokumen
-        <?php endif; ?>
+    <!-- Footer tabel: jumlah dokumen + pagination -->
+    <div class="card-footer bg-transparent" style="padding:12px 22px;">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <!-- Info jumlah -->
+            <?php
+                $from  = $offset + 1;
+                $to    = min($offset + $perPage, $totalDocs);
+            ?>
+            <span class="text-muted" style="font-size:.8rem;">
+                Menampilkan <strong><?= $from ?>–<?= $to ?></strong> dari
+                <strong><?= $totalDocs ?></strong> dokumen
+            </span>
+
+            <!-- Navigasi Pagination -->
+            <?php if ($totalPages > 1) : ?>
+            <?php
+                $pqs = $queryParams; // parameter filter tanpa 'page'
+                $buildPageUrl = function(int $p) use ($pqs): string {
+                    $q = array_merge($pqs, ['page' => $p]);
+                    return base_url('document') . '?' . http_build_query($q);
+                };
+            ?>
+            <nav aria-label="Navigasi Halaman Dokumen">
+                <ul class="pagination pagination-sm mb-0">
+                    <!-- Prev -->
+                    <li class="page-item <?= $currentPage <= 1 ? 'disabled' : '' ?>">
+                        <a class="page-link" href="<?= $buildPageUrl($currentPage - 1) ?>" style="border-radius:8px 0 0 8px;">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+
+                    <?php
+                        // Tampilkan maks 5 halaman di sekitar halaman aktif
+                        $startP = max(1, $currentPage - 2);
+                        $endP   = min($totalPages, $currentPage + 2);
+                        if ($startP > 1) : ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?= $buildPageUrl(1) ?>">1</a>
+                    </li>
+                    <?php if ($startP > 2) : ?>
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                    <?php endif; ?>
+                    <?php endif; ?>
+
+                    <?php for ($p = $startP; $p <= $endP; $p++) : ?>
+                    <li class="page-item <?= $p === $currentPage ? 'active' : '' ?>">
+                        <a class="page-link" href="<?= $buildPageUrl($p) ?>"><?= $p ?></a>
+                    </li>
+                    <?php endfor; ?>
+
+                    <?php if ($endP < $totalPages) : ?>
+                    <?php if ($endP < $totalPages - 1) : ?>
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                    <?php endif; ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?= $buildPageUrl($totalPages) ?>"><?= $totalPages ?></a>
+                    </li>
+                    <?php endif; ?>
+
+                    <!-- Next -->
+                    <li class="page-item <?= $currentPage >= $totalPages ? 'disabled' : '' ?>">
+                        <a class="page-link" href="<?= $buildPageUrl($currentPage + 1) ?>" style="border-radius:0 8px 8px 0;">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
 

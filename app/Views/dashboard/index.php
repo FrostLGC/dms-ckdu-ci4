@@ -221,8 +221,8 @@
                                             break;
                                         case 'Cetak Laporan':
                                             $ikonAksi  = 'bi-printer-fill';
-                                            $warnaAksi = 'var(--dms-secondary)';
-                                            $bgAksi    = 'rgba(107, 114, 128, 0.1)';
+                                            $warnaAksi = '#8b5cf6';
+                                            $bgAksi    = 'rgba(139, 92, 246, 0.1)';
                                             break;
                                         case 'Download Paket':
                                             $ikonAksi  = 'bi-file-earmark-zip-fill';

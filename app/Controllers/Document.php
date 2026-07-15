@@ -116,33 +116,35 @@ class Document extends BaseController
      *   3. View yang urus tampilannya (terpisah dari logika)
      * ---------------------------------------------------------------
      */
+    const PER_PAGE = 10;
+
     public function index()
     {
         // ============================================================
         // LANGKAH 1: Tangkap parameter filter dari URL (GET request)
         // ============================================================
-        // Saat user mengisi form pencarian dan klik "Filter",
-        // datanya dikirim lewat URL, contoh:
-        //   /document?keyword=kontrak&category_id=2&status=aktif
-        //
-        // getGet('nama') = ambil parameter dari URL (sama seperti $_GET['nama'] di PHP Native)
-        // Bedanya: CI4 otomatis sanitize inputnya agar aman
-        $keyword    = $this->request->getGet('keyword');
-        $categoryId = $this->request->getGet('category_id');
-        $status     = $this->request->getGet('status');
-        $instansiId = $this->request->getGet('instansi_id');
+        $keyword    = $this->request->getGet('keyword')     ?? '';
+        $categoryId = $this->request->getGet('category_id') ?? '';
+        $status     = $this->request->getGet('status')      ?? '';
+        $instansiId = $this->request->getGet('instansi_id') ?? '';
+        $page       = max(1, (int) ($this->request->getGet('page') ?? 1));
 
         // Susun array filter (hanya yang bernilai)
         $filters = [];
-        if (!empty($keyword))    $filters['keyword']     = $keyword;
-        if (!empty($categoryId)) $filters['category_id'] = $categoryId;
-        if (!empty($status))     $filters['status']      = $status;
-        if (!empty($instansiId)) $filters['instansi_id'] = $instansiId;
+        if ($keyword !== '')    $filters['keyword']     = $keyword;
+        if ($categoryId !== '') $filters['category_id'] = $categoryId;
+        if ($status !== '')     $filters['status']      = $status;
+        if ($instansiId !== '') $filters['instansi_id'] = $instansiId;
 
         // ============================================================
-        // LANGKAH 2: Ambil data dokumen dari Model (dengan filter)
+        // LANGKAH 2: Hitung total dan ambil data dengan pagination
         // ============================================================
-        $documents = $this->documentModel->getDocuments($filters);
+        $totalDocs  = $this->documentModel->countFilteredDocuments($filters);
+        $totalPages = $totalDocs > 0 ? (int) ceil($totalDocs / self::PER_PAGE) : 1;
+        $page       = min($page, $totalPages);
+        $offset     = ($page - 1) * self::PER_PAGE;
+
+        $documents  = $this->documentModel->getDocumentsPaginated($filters, self::PER_PAGE, $offset);
 
         // ============================================================
         // LANGKAH 3: Ambil daftar kategori dan instansi untuk dropdown filter
@@ -154,19 +156,35 @@ class Document extends BaseController
         $instansis = $instansiModel->orderBy('nama_instansi', 'ASC')->findAll();
 
         // ============================================================
-        // LANGKAH 4: Siapkan data untuk View
+        // LANGKAH 4: Susun parameter URL untuk link pagination
+        // ============================================================
+        $queryParams = array_filter([
+            'keyword'     => $keyword,
+            'category_id' => $categoryId,
+            'status'      => $status,
+            'instansi_id' => $instansiId,
+        ], fn($v) => $v !== '' && $v !== null);
+
+        // ============================================================
+        // LANGKAH 5: Siapkan data untuk View
         // ============================================================
         $data = [
-            'title'      => 'Daftar Dokumen',
-            'documents'  => $documents,
-            'categories' => $categories,
-            'instansis'  => $instansis,
-            'filters'    => [
+            'title'       => 'Daftar Dokumen',
+            'documents'   => $documents,
+            'categories'  => $categories,
+            'instansis'   => $instansis,
+            'filters'     => [
                 'keyword'     => $keyword,
                 'category_id' => $categoryId,
                 'status'      => $status,
                 'instansi_id' => $instansiId,
             ],
+            'totalDocs'   => $totalDocs,
+            'totalPages'  => $totalPages,
+            'currentPage' => $page,
+            'perPage'     => self::PER_PAGE,
+            'offset'      => $offset,
+            'queryParams' => $queryParams,
         ];
 
         return view('document/index', $data);

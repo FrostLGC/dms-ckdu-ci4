@@ -1,5 +1,5 @@
 <!-- ============================================================
-     HALAMAN: Audit Log (Riwayat Aktivitas Lengkap)
+     HALAMAN: Audit Log (Riwayat Aktivitas Lengkap) — Iterasi 17
      Meng-extend layout/main.php
      ============================================================ -->
 <?= $this->extend('layout/main') ?>
@@ -19,6 +19,58 @@
     </div>
 </div>
 
+<!-- Tombol Filter Cepat Periode -->
+<?php
+    $today      = date('Y-m-d');
+    $today7     = date('Y-m-d', strtotime('-6 days'));
+    $today30    = date('Y-m-d', strtotime('-29 days'));
+    $sd         = $filters['start_date'] ?? '';
+    $ed         = $filters['end_date']   ?? '';
+    $kw         = $filters['keyword']    ?? '';
+    $act        = $filters['action']     ?? '';
+    $uid        = $filters['user_id']    ?? '';
+
+    // Deteksi tombol aktif berdasarkan nilai filter saat ini
+    $isToday  = ($sd === $today && $ed === $today);
+    $is7days  = ($sd === $today7 && $ed === $today);
+    $is30days = ($sd === $today30 && $ed === $today);
+    $isAll    = (empty($sd) && empty($ed));
+
+    // Helper: bangun URL filter cepat (tetap bawa keyword/action/user_id)
+    $baseQs = http_build_query(array_filter(['keyword' => $kw, 'action' => $act, 'user_id' => $uid], fn($v) => $v !== ''));
+    $baseQs = $baseQs ? '&' . $baseQs : '';
+?>
+<div class="mb-3 d-flex flex-wrap gap-2 animate-in">
+    <a href="<?= base_url('auditlog') ?>?quick=today<?= $baseQs ?>"
+       class="btn btn-sm <?= $isToday ? 'btn-dms-primary' : 'btn-outline-secondary' ?>"
+       style="border-radius:20px; font-size:.82rem; display:inline-flex; align-items:center; justify-content:center; gap:0.35rem; padding:0.375rem 1rem; line-height:1.5;">
+        <i class="bi bi-calendar-day"></i> Hari Ini
+    </a>
+    <a href="<?= base_url('auditlog') ?>?quick=7days<?= $baseQs ?>"
+       class="btn btn-sm <?= $is7days ? 'btn-dms-primary' : 'btn-outline-secondary' ?>"
+       style="border-radius:20px; font-size:.82rem; display:inline-flex; align-items:center; justify-content:center; gap:0.35rem; padding:0.375rem 1rem; line-height:1.5;">
+        <i class="bi bi-calendar-week"></i> 7 Hari Terakhir
+    </a>
+    <a href="<?= base_url('auditlog') ?>?quick=30days<?= $baseQs ?>"
+       class="btn btn-sm <?= $is30days ? 'btn-dms-primary' : 'btn-outline-secondary' ?>"
+       style="border-radius:20px; font-size:.82rem; display:inline-flex; align-items:center; justify-content:center; gap:0.35rem; padding:0.375rem 1rem; line-height:1.5;">
+        <i class="bi bi-calendar-month"></i> 30 Hari Terakhir
+    </a>
+    <a href="<?= base_url('auditlog') ?>?quick=all<?= $baseQs ?>"
+       class="btn btn-sm <?= $isAll ? 'btn-dms-primary' : 'btn-outline-secondary' ?>"
+       style="border-radius:20px; font-size:.82rem; display:inline-flex; align-items:center; justify-content:center; gap:0.35rem; padding:0.375rem 1rem; line-height:1.5;">
+        <i class="bi bi-archive"></i> Semua Riwayat
+    </a>
+</div>
+
+<!-- Pesan Error Tanggal -->
+<?php if (!empty($dateError)) : ?>
+<div class="alert alert-warning alert-sm py-2 mb-3 animate-in" style="border-radius:10px; font-size:.85rem;">
+    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+    <?= esc($dateError) ?> — rentang tanggal telah dibalik secara otomatis.
+</div>
+<?php endif; ?>
+
 <!-- Form Filter Audit Log -->
 <div class="card mb-4 animate-in">
     <div class="card-body p-3">
@@ -26,32 +78,32 @@
             <div class="row g-2 align-items-end">
                 <div class="col-12 col-md-6 col-xl-2">
                     <label class="form-label text-muted" style="font-size: .85rem;">Pencarian</label>
-                    <input type="text" class="form-control form-control-sm" name="keyword" 
-                           placeholder="Cari aktivitas, dokumen, pengguna..." 
+                    <input type="text" class="form-control form-control-sm" name="keyword"
+                           placeholder="Cari aktivitas, dokumen, pengguna..."
                            value="<?= esc($filters['keyword'] ?? '') ?>">
                 </div>
                 <div class="col-12 col-md-6 col-xl-2">
                     <label class="form-label text-muted" style="font-size: .85rem;">Jenis Aksi</label>
                     <select name="action" class="form-select form-select-sm">
                         <option value="">Semua Aksi</option>
-                        <option value="Login" <?= ($filters['action'] ?? '') === 'Login' ? 'selected' : '' ?>>Login</option>
-                        <option value="Logout" <?= ($filters['action'] ?? '') === 'Logout' ? 'selected' : '' ?>>Logout</option>
-                        <option value="Upload" <?= ($filters['action'] ?? '') === 'Upload' ? 'selected' : '' ?>>Upload</option>
-                        <option value="Edit" <?= ($filters['action'] ?? '') === 'Edit' ? 'selected' : '' ?>>Edit</option>
-                        <option value="Revisi" <?= ($filters['action'] ?? '') === 'Revisi' ? 'selected' : '' ?>>Revisi</option>
-                        <option value="Hapus" <?= ($filters['action'] ?? '') === 'Hapus' ? 'selected' : '' ?>>Hapus</option>
-                        <option value="Preview" <?= ($filters['action'] ?? '') === 'Preview' ? 'selected' : '' ?>>Preview</option>
-                        <option value="Download" <?= ($filters['action'] ?? '') === 'Download' ? 'selected' : '' ?>>Download</option>
-                        <option value="Cetak Laporan" <?= ($filters['action'] ?? '') === 'Cetak Laporan' ? 'selected' : '' ?>>Cetak Laporan</option>
+                        <option value="Login"          <?= ($filters['action'] ?? '') === 'Login'          ? 'selected' : '' ?>>Login</option>
+                        <option value="Logout"         <?= ($filters['action'] ?? '') === 'Logout'         ? 'selected' : '' ?>>Logout</option>
+                        <option value="Upload"         <?= ($filters['action'] ?? '') === 'Upload'         ? 'selected' : '' ?>>Upload</option>
+                        <option value="Edit"           <?= ($filters['action'] ?? '') === 'Edit'           ? 'selected' : '' ?>>Edit</option>
+                        <option value="Revisi"         <?= ($filters['action'] ?? '') === 'Revisi'         ? 'selected' : '' ?>>Revisi</option>
+                        <option value="Hapus"          <?= ($filters['action'] ?? '') === 'Hapus'          ? 'selected' : '' ?>>Hapus</option>
+                        <option value="Preview"        <?= ($filters['action'] ?? '') === 'Preview'        ? 'selected' : '' ?>>Preview</option>
+                        <option value="Download"       <?= ($filters['action'] ?? '') === 'Download'       ? 'selected' : '' ?>>Download</option>
+                        <option value="Cetak Laporan"  <?= ($filters['action'] ?? '') === 'Cetak Laporan'  ? 'selected' : '' ?>>Cetak Laporan</option>
                         <option value="Download Paket" <?= ($filters['action'] ?? '') === 'Download Paket' ? 'selected' : '' ?>>Download Paket</option>
-                        <option value="Akses Ditolak" <?= ($filters['action'] ?? '') === 'Akses Ditolak' ? 'selected' : '' ?>>Akses Ditolak</option>
+                        <option value="Akses Ditolak"  <?= ($filters['action'] ?? '') === 'Akses Ditolak'  ? 'selected' : '' ?>>Akses Ditolak</option>
                     </select>
                 </div>
                 <div class="col-12 col-md-6 col-xl-2">
                     <label class="form-label text-muted" style="font-size: .85rem;">Pengguna</label>
                     <select name="user_id" class="form-select form-select-sm">
                         <option value="">Semua Pengguna</option>
-                        <?php if(isset($users)) : foreach($users as $user) : ?>
+                        <?php if (isset($users)) : foreach ($users as $user) : ?>
                         <option value="<?= esc($user['id']) ?>" <?= ($filters['user_id'] ?? '') == $user['id'] ? 'selected' : '' ?>>
                             <?= esc($user['nama']) ?>
                         </option>
@@ -60,12 +112,12 @@
                 </div>
                 <div class="col-12 col-md-6 col-xl-2">
                     <label class="form-label text-muted" style="font-size: .85rem;">Dari Tanggal</label>
-                    <input type="date" class="form-control form-control-sm" name="start_date" 
+                    <input type="date" class="form-control form-control-sm" name="start_date"
                            value="<?= esc($filters['start_date'] ?? '') ?>">
                 </div>
                 <div class="col-12 col-md-6 col-xl-2">
                     <label class="form-label text-muted" style="font-size: .85rem;">Sampai Tanggal</label>
-                    <input type="date" class="form-control form-control-sm" name="end_date" 
+                    <input type="date" class="form-control form-control-sm" name="end_date"
                            value="<?= esc($filters['end_date'] ?? '') ?>">
                 </div>
                 <div class="col-12 col-md-6 col-xl-2 d-flex align-items-end">
@@ -73,7 +125,7 @@
                         <a href="<?= base_url('auditlog') ?>" class="btn btn-light border text-secondary d-flex align-items-center justify-content-center gap-1 flex-fill" style="border-radius:10px;">
                             <i class="bi bi-arrow-counterclockwise"></i> Reset
                         </a>
-                        <button type="submit" class="btn btn-dms-primary d-flex align-items-center justify-content-center gap-1 flex-fill"> 
+                        <button type="submit" class="btn btn-dms-primary d-flex align-items-center justify-content-center gap-1 flex-fill">
                             Filter
                         </button>
                     </div>
@@ -85,6 +137,10 @@
 
 <!-- Tabel Audit Log -->
 <?php if (!empty($logs)) : ?>
+<?php
+    $from  = $offset + 1;
+    $to    = min($offset + $perPage, $totalLogs);
+?>
 <div class="card animate-in">
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -100,13 +156,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php $no = 1; foreach ($logs as $log) : ?>
+                    <?php $no = $offset + 1; foreach ($logs as $log) : ?>
                     <tr>
                         <td class="text-muted"><?= $no++ ?></td>
                         <td>
                             <?php
-                                // Tentukan badge dan warna berdasarkan jenis aksi
-                                $aksiType = $log['aksi'];
+                                $aksiType   = $log['aksi'];
                                 $badgeClass = 'bg-secondary bg-opacity-10 text-secondary';
                                 $ikonAksi   = 'bi-activity';
 
@@ -145,7 +200,7 @@
                                         break;
                                     case 'Cetak Laporan':
                                         $ikonAksi = 'bi-printer-fill';
-                                        $badgeClass = 'bg-secondary bg-opacity-10 text-secondary';
+                                        $badgeClass = 'badge-cetak-laporan';
                                         break;
                                     case 'Download Paket':
                                         $ikonAksi = 'bi-file-earmark-zip-fill';
@@ -220,7 +275,6 @@
                             <?= esc($log['nama_user'] ?? 'Unknown') ?>
                         </td>
                         <td class="text-muted" style="font-size:.82rem;">
-                            <!-- Tampilkan tanggal dan jam -->
                             <?= date('d M Y', strtotime($log['created_at'])) ?>
                             <br>
                             <small style="opacity:.7;">
@@ -234,9 +288,71 @@
             </table>
         </div>
     </div>
-    <!-- Footer tabel -->
-    <div class="card-footer bg-transparent text-muted" style="font-size:.8rem; padding:12px 22px;">
-        Menampilkan <?= count($logs) ?> catatan aktivitas
+    <!-- Footer tabel: info jumlah + pagination -->
+    <div class="card-footer bg-transparent" style="padding:12px 22px;">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <!-- Info jumlah -->
+            <span class="text-muted" style="font-size:.8rem;">
+                Menampilkan <strong><?= $from ?>–<?= $to ?></strong> dari
+                <strong><?= $totalLogs ?></strong> aktivitas
+            </span>
+
+            <!-- Navigasi Pagination -->
+            <?php if ($totalPages > 1) : ?>
+            <?php
+                $pqs = $queryParams; // parameter filter tanpa 'page'
+                $buildPageUrl = function(int $p) use ($pqs): string {
+                    $q = array_merge($pqs, ['page' => $p]);
+                    return base_url('auditlog') . '?' . http_build_query($q);
+                };
+            ?>
+            <nav aria-label="Navigasi Halaman Audit Log">
+                <ul class="pagination pagination-sm mb-0">
+                    <!-- Prev -->
+                    <li class="page-item <?= $currentPage <= 1 ? 'disabled' : '' ?>">
+                        <a class="page-link" href="<?= $buildPageUrl($currentPage - 1) ?>" style="border-radius:8px 0 0 8px;">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+
+                    <?php
+                        // Tampilkan maks 5 halaman di sekitar halaman aktif
+                        $startP = max(1, $currentPage - 2);
+                        $endP   = min($totalPages, $currentPage + 2);
+                        if ($startP > 1) : ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?= $buildPageUrl(1) ?>">1</a>
+                    </li>
+                    <?php if ($startP > 2) : ?>
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                    <?php endif; ?>
+                    <?php endif; ?>
+
+                    <?php for ($p = $startP; $p <= $endP; $p++) : ?>
+                    <li class="page-item <?= $p === $currentPage ? 'active' : '' ?>">
+                        <a class="page-link" href="<?= $buildPageUrl($p) ?>"><?= $p ?></a>
+                    </li>
+                    <?php endfor; ?>
+
+                    <?php if ($endP < $totalPages) : ?>
+                    <?php if ($endP < $totalPages - 1) : ?>
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                    <?php endif; ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?= $buildPageUrl($totalPages) ?>"><?= $totalPages ?></a>
+                    </li>
+                    <?php endif; ?>
+
+                    <!-- Next -->
+                    <li class="page-item <?= $currentPage >= $totalPages ? 'disabled' : '' ?>">
+                        <a class="page-link" href="<?= $buildPageUrl($currentPage + 1) ?>" style="border-radius:0 8px 8px 0;">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
 
@@ -245,13 +361,30 @@
 <div class="card animate-in">
     <div class="card-body empty-state">
         <div class="empty-icon mb-3 text-muted" style="font-size: 3rem;">📋</div>
+        <?php if (!empty($filters['start_date']) && $filters['start_date'] === date('Y-m-d') && $filters['end_date'] === date('Y-m-d')) : ?>
+        <h5>Tidak ada aktivitas hari ini.</h5>
+        <p class="text-muted mb-3">Belum ada yang tercatat pada tanggal <?= date('d M Y') ?>.</p>
+        <?php else : ?>
         <h5>Tidak ada aktivitas yang sesuai dengan filter.</h5>
         <p class="text-muted mb-3">Silakan sesuaikan kriteria pencarian Anda.</p>
-        <a href="<?= base_url('auditlog') ?>" class="btn btn-light border">
-            <i class="bi bi-arrow-counterclockwise me-2"></i> Reset Filter
-        </a>
+        <?php endif; ?>
+        <div class="d-flex justify-content-center gap-2 flex-wrap">
+            <a href="<?= base_url('auditlog') ?>?quick=all" class="btn btn-outline-primary btn-sm" style="border-radius:20px;">
+                <i class="bi bi-archive me-1"></i> Tampilkan Semua Riwayat
+            </a>
+            <a href="<?= base_url('auditlog') ?>" class="btn btn-light border btn-sm" style="border-radius:20px;">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filter
+            </a>
+        </div>
     </div>
 </div>
 <?php endif; ?>
+
+<style>
+.badge-cetak-laporan {
+    background-color: rgba(139, 92, 246, 0.1) !important;
+    color: #8b5cf6 !important;
+}
+</style>
 
 <?= $this->endSection() ?>
