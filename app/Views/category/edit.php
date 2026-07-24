@@ -10,7 +10,7 @@
 <nav aria-label="breadcrumb" class="mb-4 animate-in">
     <ol class="breadcrumb" style="font-size:.85rem;">
         <li class="breadcrumb-item"><a href="<?= base_url('category') ?>" class="text-decoration-none">Kategori</a></li>
-        <li class="breadcrumb-item active">Edit — <?= esc($category['nama_kategori']) ?></li>
+        <li class="breadcrumb-item active">Edit - <?= esc($category['nama_kategori']) ?></li>
     </ol>
 </nav>
 

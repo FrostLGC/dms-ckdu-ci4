@@ -192,7 +192,7 @@
                             <div>
                                 <div class="fw-semibold" id="fileName" style="font-size:.9rem;"></div>
                                 <small class="text-muted" id="fileSize"></small>
-                                <small class="text-warning fw-semibold"> — File ini akan menggantikan versi lama</small>
+                                <small class="text-warning fw-semibold"> - File ini akan menggantikan versi lama</small>
                             </div>
                         </div>
                     </div>

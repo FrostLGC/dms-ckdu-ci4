@@ -9,7 +9,7 @@
 <nav aria-label="breadcrumb" class="mb-4 animate-in">
     <ol class="breadcrumb" style="font-size:.85rem;">
         <li class="breadcrumb-item"><a href="<?= base_url('instansi') ?>" class="text-decoration-none">Instansi</a></li>
-        <li class="breadcrumb-item active">Edit — <?= esc($instansi['nama_instansi']) ?></li>
+        <li class="breadcrumb-item active">Edit - <?= esc($instansi['nama_instansi']) ?></li>
     </ol>
 </nav>
 

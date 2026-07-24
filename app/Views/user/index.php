@@ -30,7 +30,7 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th style="width:50px;">#</th>
+                        <th style="width:50px;"></th>
                         <th>Nama</th>
                         <th>Email</th>
                         <th>Role</th>
@@ -120,7 +120,7 @@
 <!-- Empty State -->
 <div class="card animate-in">
     <div class="card-body empty-state">
-        <div class="empty-icon">👤</div>
+        <div class="empty-icon"><i class="bi bi-people"></div>
         <h5>Belum ada pengguna</h5>
         <p class="text-muted mb-3">Mulai dengan menambahkan pengguna pertama</p>
         <a href="<?= base_url('user/create') ?>" class="btn btn-dms-primary">

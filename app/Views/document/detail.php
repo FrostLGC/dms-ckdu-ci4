@@ -47,7 +47,7 @@
                                     <?= esc($document['nomor_dokumen']) ?>
                                 </span>
                             <?php else : ?>
-                                <span class="text-muted">—</span>
+                                <span class="text-muted">-</span>
                             <?php endif; ?>
                         </div>
                     </div>

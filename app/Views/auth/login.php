@@ -76,7 +76,7 @@
                 <!-- Info default login -->
                 <div class="text-center" style="margin-top:20px;">
                     <small style="color:rgba(255,255,255,.25); font-size:.75rem;">
-                        Demo: admin@ckdu.com / password
+                        <!-- Demo: admin@ckdu.com / password -->
                     </small>
                 </div>
             </form>
@@ -85,7 +85,7 @@
         <!-- Company branding di bawah -->
         <div class="position-absolute bottom-0 w-100 text-center pb-3" style="z-index:2;">
             <small style="color:rgba(255,255,255,.2); font-size:.7rem;">
-                &copy; <?= date('Y') ?> PT. Cipta Karya Dharma Utama &mdash; All Rights Reserved
+                &copy; <?= date('Y') ?> PT. Cipta Karya Dharma Utama - All Rights Reserved
             </small>
         </div>
     </div>

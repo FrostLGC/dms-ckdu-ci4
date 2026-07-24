@@ -140,21 +140,33 @@
      ============================================================ -->
 <?php
     // Cek apakah ada filter yang aktif
-    $hasFilter = !empty($filters['keyword']) || !empty($filters['category_id']) || !empty($filters['status']) || !empty($filters['instansi_id']);
+    $hasFilter = !empty($filters['keyword'])
+        || !empty($filters['category_id'])
+        || !empty($filters['status'])
+        || !empty($filters['instansi_id']);
 ?>
+
 <?php if ($hasFilter) : ?>
-<div class="d-flex align-items-center gap-2 mb-3 animate-in" style="flex-wrap:wrap;">
-    <span class="text-muted" style="font-size:.82rem;">
-        <i class="bi bi-funnel-fill me-1"></i> Filter aktif:
+<div class="d-flex align-items-center gap-2 mb-3 animate-in" style="flex-wrap: wrap;">
+    <span class="text-muted" style="font-size: .82rem;">
+        <i class="bi bi-funnel-fill me-1"></i>
+        Filter aktif:
     </span>
+
     <?php if (!empty($filters['keyword'])) : ?>
-        <span class="badge bg-primary bg-opacity-10 text-primary" style="font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px;">
-            🔍 "<?= esc($filters['keyword']) ?>"
+        <span
+            class="badge bg-primary bg-opacity-10 text-primary"
+            style="font-size: .78rem; font-weight: 600; padding: 5px 12px; border-radius: 20px;"
+        >
+            <i class="bi bi-search me-1"></i>
+            "<?= esc($filters['keyword']) ?>"
         </span>
     <?php endif; ?>
+
     <?php if (!empty($filters['category_id'])) : ?>
         <?php
             $namaKat = '-';
+
             foreach ($categories as $cat) {
                 if ($cat['id'] == $filters['category_id']) {
                     $namaKat = $cat['nama_kategori'];
@@ -162,13 +174,20 @@
                 }
             }
         ?>
-        <span class="badge bg-info bg-opacity-10 text-info" style="font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px;">
-            📂 <?= esc($namaKat) ?>
+
+        <span
+            class="badge bg-info bg-opacity-10 text-info"
+            style="font-size: .78rem; font-weight: 600; padding: 5px 12px; border-radius: 20px;"
+        >
+            <i class="bi bi-folder-fill me-1"></i>
+            <?= esc($namaKat) ?>
         </span>
     <?php endif; ?>
+
     <?php if (!empty($filters['instansi_id'])) : ?>
         <?php
             $namaInst = '-';
+
             foreach ($instansis as $inst) {
                 if ($inst['id'] == $filters['instansi_id']) {
                     $namaInst = $inst['nama_instansi'];
@@ -176,18 +195,40 @@
                 }
             }
         ?>
-        <span class="badge bg-secondary bg-opacity-10 text-secondary" style="font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px;">
-            🏢 <?= esc($namaInst) ?>
+
+        <span
+            class="badge bg-secondary bg-opacity-10 text-secondary"
+            style="font-size: .78rem; font-weight: 600; padding: 5px 12px; border-radius: 20px;"
+        >
+            <i class="bi bi-building me-1"></i>
+            <?= esc($namaInst) ?>
         </span>
     <?php endif; ?>
+
     <?php if (!empty($filters['status'])) : ?>
-        <span class="badge <?= $filters['status'] == 'aktif' ? 'bg-success bg-opacity-10 text-success' : 'bg-warning bg-opacity-10 text-warning' ?>"
-              style="font-size:.78rem; font-weight:600; padding:5px 12px; border-radius:20px;">
-            <?= $filters['status'] == 'aktif' ? '● Aktif' : '● Arsip' ?>
+        <span
+            class="badge <?= $filters['status'] === 'aktif'
+                ? 'bg-success bg-opacity-10 text-success'
+                : 'bg-warning bg-opacity-10 text-warning' ?>"
+            style="font-size: .78rem; font-weight: 600; padding: 5px 12px; border-radius: 20px;"
+        >
+            <?php if ($filters['status'] === 'aktif') : ?>
+                <i class="bi bi-check-circle-fill me-1"></i>
+                Aktif
+            <?php else : ?>
+                <i class="bi bi-archive-fill me-1"></i>
+                Arsip
+            <?php endif; ?>
         </span>
     <?php endif; ?>
-    <a href="<?= base_url('document') ?>" class="text-muted text-decoration-none" style="font-size:.78rem;">
-        <i class="bi bi-x-circle me-1"></i> Hapus semua filter
+
+    <a
+        href="<?= base_url('document') ?>"
+        class="text-muted text-decoration-none"
+        style="font-size: .78rem;"
+    >
+        <i class="bi bi-x-circle me-1"></i>
+        Hapus semua filter
     </a>
 </div>
 <?php endif; ?>
@@ -200,7 +241,7 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th style="width:50px;">#</th>
+                        <th style="width:50px;"></th>
                         <th>Judul Dokumen</th>
                         <th>No. Dokumen</th>
                         <th>Kategori</th>
@@ -388,7 +429,7 @@
     <div class="card-body empty-state">
         <?php if ($hasFilter) : ?>
             <!-- Empty state khusus saat filter aktif tapi tidak ada hasil -->
-            <div class="empty-icon">🔍</div>
+            <div class="empty-icon"><i class="bi bi-search"></i></div>
             <h5>Tidak ada dokumen yang cocok</h5>
             <p class="text-muted mb-3">Coba ubah kata kunci atau filter pencarian Anda</p>
             <a href="<?= base_url('document') ?>" class="btn btn-outline-primary" style="border-radius:10px;">
@@ -396,7 +437,7 @@
             </a>
         <?php else : ?>
             <!-- Empty state saat belum ada dokumen sama sekali -->
-            <div class="empty-icon">📁</div>
+            <div class="empty-icon"><i class="bi bi-folder"></i></div>
             <h5>Belum ada dokumen</h5>
             <p class="text-muted mb-3">Mulai dengan mengupload dokumen pertama Anda</p>
             <a href="<?= base_url('document/create') ?>" class="btn btn-dms-primary">

@@ -10,7 +10,7 @@
 <nav aria-label="breadcrumb" class="mb-4 animate-in">
     <ol class="breadcrumb" style="font-size:.85rem;">
         <li class="breadcrumb-item"><a href="<?= base_url('user') ?>" class="text-decoration-none">Pengguna</a></li>
-        <li class="breadcrumb-item active">Edit — <?= esc($user['nama']) ?></li>
+        <li class="breadcrumb-item active">Edit - <?= esc($user['nama']) ?></li>
     </ol>
 </nav>
 

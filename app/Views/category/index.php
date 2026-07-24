@@ -32,7 +32,7 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th style="width:50px;">#</th>
+                        <th style="width:50px;"></th>
                         <th>Nama Kategori</th>
                         <th>Deskripsi</th>
                         <th style="width:130px;">Jml. Dokumen</th>
@@ -59,7 +59,7 @@
                             </a>
                         </td>
                         <td class="text-muted" style="font-size:.85rem;">
-                            <?= esc($cat['deskripsi'] ?: '—') ?>
+                            <?= esc($cat['deskripsi'] ?: '-') ?>
                         </td>
                         <td>
                             <!--
@@ -100,7 +100,7 @@
                                 </button>
                             </div>
                             <?php else : ?>
-                                <span class="text-muted">&mdash;</span>
+                                <span class="text-muted">-</span>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -119,7 +119,7 @@
 <!-- Empty State -->
 <div class="card animate-in">
     <div class="card-body empty-state">
-        <div class="empty-icon">📂</div>
+        <div class="empty-icon"><i class="bi bi-folder"></i></div>
         <h5>Belum ada kategori</h5>
         <p class="text-muted mb-3">Mulai dengan menambahkan kategori dokumen pertama</p>
         <?php if (in_array(session()->get('user_role'), ['admin', 'hrd'])) : ?>

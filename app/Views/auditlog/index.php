@@ -1,5 +1,5 @@
 <!-- ============================================================
-     HALAMAN: Audit Log (Riwayat Aktivitas Lengkap) — Iterasi 17
+     HALAMAN: Audit Log (Riwayat Aktivitas Lengkap) - Iterasi 17
      Meng-extend layout/main.php
      ============================================================ -->
 <?= $this->extend('layout/main') ?>
@@ -67,7 +67,7 @@
 <?php if (!empty($dateError)) : ?>
 <div class="alert alert-warning alert-sm py-2 mb-3 animate-in" style="border-radius:10px; font-size:.85rem;">
     <i class="bi bi-exclamation-triangle-fill me-1"></i>
-    <?= esc($dateError) ?> — rentang tanggal telah dibalik secara otomatis.
+    <?= esc($dateError) ?> - rentang tanggal telah dibalik secara otomatis.
 </div>
 <?php endif; ?>
 
@@ -147,7 +147,7 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th style="width:50px;">#</th>
+                        <th style="width:50px;"></th>
                         <th style="width:110px;">Aksi</th>
                         <th>Objek</th>
                         <th>Keterangan</th>
@@ -265,7 +265,7 @@
                         </td>
                         <td class="text-muted" style="font-size:.85rem;">
                             <?php
-                                $safeKet = esc($log['keterangan'] ?? '—');
+                                $safeKet = esc($log['keterangan'] ?? '-');
                                 $safeKet = str_replace("\nCatatan:", "\n<span class=\"fw-semibold text-dark\">Catatan:</span>", $safeKet);
                                 echo nl2br($safeKet);
                             ?>
@@ -360,7 +360,7 @@
 <!-- Empty State -->
 <div class="card animate-in">
     <div class="card-body empty-state">
-        <div class="empty-icon mb-3 text-muted" style="font-size: 3rem;">📋</div>
+        <div class="empty-icon"><i class="bi bi-calendar"></i></div>
         <?php if (!empty($filters['start_date']) && $filters['start_date'] === date('Y-m-d') && $filters['end_date'] === date('Y-m-d')) : ?>
         <h5>Tidak ada aktivitas hari ini.</h5>
         <p class="text-muted mb-3">Belum ada yang tercatat pada tanggal <?= date('d M Y') ?>.</p>

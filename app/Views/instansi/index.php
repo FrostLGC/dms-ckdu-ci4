@@ -17,9 +17,9 @@
         </h4>
         <p class="text-muted mb-0" style="font-size: .85rem;">
             <?php if (in_array($role, ['admin', 'hrd'])) : ?>
-                Kelola data instansi dan klik nama untuk melihat dokumen terkait.
+                Kelola data instansi dan klik nama untuk melihat dokumen terkait
             <?php else : ?>
-                Klik nama instansi untuk melihat dokumen berdasarkan mitra kerja.
+                Klik nama instansi untuk melihat dokumen berdasarkan mitra kerja
             <?php endif; ?>
         </p>
     </div>
@@ -38,7 +38,7 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th style="width:50px;">#</th>
+                        <th style="width:50px;"></th>
                         <th>Nama Instansi</th>
                         <th>Alamat</th>
                         <th>No. Telepon</th>
@@ -69,14 +69,14 @@
                             </div>
                         </td>
                         <td class="text-muted" style="font-size:.85rem;">
-                            <?= esc($item['alamat'] ?: '—') ?>
+                            <?= esc($item['alamat'] ?: '-') ?>
                         </td>
                         <td class="text-muted" style="font-size:.85rem;">
                             <?php if (!empty($item['no_telp'])) : ?>
                                 <i class="bi bi-telephone me-1" style="opacity:.5;"></i>
                                 <?= esc($item['no_telp']) ?>
                             <?php else : ?>
-                                —
+                                -
                             <?php endif; ?>
                         </td>
                         <td class="text-muted" style="font-size:.82rem;">
@@ -101,7 +101,7 @@
                                 </button>
                             </div>
                             <?php else : ?>
-                                <span class="text-muted">&mdash;</span>
+                                <span class="text-muted">-</span>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -120,7 +120,7 @@
 <?php else : ?>
 <div class="card animate-in">
     <div class="card-body empty-state">
-        <div class="empty-icon">🏢</div>
+        <div class="empty-icon"><i class="bi bi-building"></i></div>
         <h5>Belum ada data instansi</h5>
         <?php if (in_array($role, ['admin', 'hrd'])) : ?>
         <p class="text-muted mb-3">Mulai dengan menambahkan instansi pertama</p>

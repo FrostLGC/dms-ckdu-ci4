@@ -88,7 +88,7 @@
                         <?php endif; ?>
                         <div class="form-text">
                             <i class="bi bi-shield-lock me-1"></i>
-                            Password akan dienkripsi menggunakan BCRYPT sebelum disimpan.
+                            Password akan dienkripsi sebelum disimpan
                         </div>
                     </div>
 

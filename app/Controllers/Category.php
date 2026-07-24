@@ -288,7 +288,7 @@ class Category extends BaseController
         $this->logActivity('Edit Kategori', $this->request->getPost('nama_kategori'), 'Edit kategori "' . $this->request->getPost('nama_kategori') . '"');
 
         return redirect()->to('/category')
-            ->with('success', 'Kategori berhasil diperbarui menjadi "' . $this->request->getPost('nama_kategori') . '"!');
+            ->with('success', 'Kategori "' . $this->request->getPost('nama_kategori') . '" berhasil diperbarui!');
     }
 
     /**
